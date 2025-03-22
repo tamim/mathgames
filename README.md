@@ -1,4 +1,4 @@
-Live Link : https://github.com/tamim/mathgames
+Live Link : https://mhmithun.github.io/MathGames/elementary_math_challenge.html
 
 # Elementary Math Challenge
 
@@ -55,4 +55,3 @@ This project has been updated with the following improvements:
 - **Game Over Message:** Enhanced the game over message with personalized feedback.
 - **Quit Game Button:** Added a "Quit Game" button for easy exit.
 - **Code Organization & Accessibility:** Improved code readability and accessibility.
-
