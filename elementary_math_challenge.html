@@ -185,6 +185,19 @@
       /* Optionally adjust other properties like padding, border-radius, etc. */
     }
 
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 20px;
+      color: #ccc;
+    }
+    .footer a {
+      color: #00ffcc;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -609,7 +622,7 @@
 
     // Function to share score on Facebook
     function shareScore() {
-      const gameURL = "https://tamim.github.io/mathgames/elementary_math_challenge.html"; 
+      const gameURL = "https://yourgameurl.com"; // Replace with your actual game URL
       const scoreText = `I scored ${score} points on Elementary Math Challenge! Can you beat my score?`;
       const fbShareURL = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameURL)}&quote=${encodeURIComponent(scoreText)}`;
       window.open(fbShareURL, '_blank');
@@ -619,5 +632,8 @@
   </script>
   
   <div data-lastpass-root="" style="position: absolute; top: 0; left: 0; height: 0; width: 0;"></div>
+  <footer class="footer">
+    <p>Powered by <a href="https://www.facebook.com/TamimsThinkLab" target="_blank">Tamim's ThinkLab</a></p>
+  </footer>
 </body>
 </html>
