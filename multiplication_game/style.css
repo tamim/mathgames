@@ -1,0 +1,213 @@
+/* Base styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f9fafb;
+  color: #111827;
+  margin: 0;
+}
+
+h1 {
+  color: #1f2937;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+label {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 10px;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 90%;
+  max-width: 300px;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.03);
+}
+
+#start-btn,
+#submit-btn {
+  background-color: #3b82f6;
+  color: white;
+  margin: 10px 8px;
+}
+
+#start-btn:hover,
+#submit-btn:hover {
+  background-color: #2563eb;
+}
+
+#restart-btn {
+  margin-top: 2rem;
+  background-color: #6b7280;
+  color: white;
+  display: inline-block;
+}
+
+#restart-btn:hover {
+  background-color: #4b5563;
+}
+
+/* Game area layout enhancement */
+#game-area {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease-in-out;
+}
+
+#question {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+#answer-input {
+  width: 120px;
+  margin-right: 10px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+#feedback {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  min-height: 1.5em;
+}
+
+#level-indicator {
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+#score,
+#timer {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Level badge colors */
+.level-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  border-radius: 20px;
+  color: white;
+  margin-top: 10px;
+}
+
+.level-easy {
+  background-color: #16a34a;
+}
+
+.level-medium {
+  background-color: #f59e0b;
+}
+
+.level-hard {
+  background-color: #dc2626;
+}
+
+/* High score board */
+#high-score-board {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem 1.5rem;
+  background-color: #fefce8;
+  border: 2px solid #facc15;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: none;
+}
+
+#high-score-board h3 {
+  font-size: 1.4rem;
+  color: #ca8a04;
+  text-align: center;
+  margin-top: 0;
+}
+
+#high-score-board ol {
+  padding-left: 1.2rem;
+  margin: 0;
+  text-align: left;
+}
+
+#high-score-board li {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+#high-score-board li small {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  #game-area {
+    padding: 1.2rem;
+  }
+
+  #question {
+    font-size: 1.8rem;
+  }
+
+  button {
+    width: 90%;
+    max-width: 300px;
+    margin: 0.5rem auto;
+  }
+
+  #answer-input {
+    width: 100%;
+    margin: 0.5rem auto;
+  }
+}
+
+#welcome-screen {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #e0f2fe;
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+#welcome-screen h2 {
+  color: #1d4ed8;
+  margin-bottom: 1rem;
+}
+
+#welcome-screen button {
+  margin-top: 1.5rem;
+  background-color: #2563eb;
+  color: white;
+}

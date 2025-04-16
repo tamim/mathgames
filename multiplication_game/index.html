@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiplication Quiz Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Multiplication Game</h1>
+  <div id="welcome-screen">
+    <h2>Welcome to the Multiplication Game!</h2>
+    <p>This is a fun and fast-paced game to master your multiplication skills.</p>
+    <ul style="text-align: left; display: inline-block; text-align: left;">
+      <li>You’ll be given random multiplication questions.</li>
+      <li>You can choose your level: Easy, Medium, or Hard.</li>
+      <li>Correct answer: <strong>+3 points</strong></li>
+      <li>Wrong answer: <strong>−2 points</strong> and shows the correct one</li>
+      <li>You can choose how long you want to play.</li>
+    </ul>
+    <p>Are you ready?</p>
+    <button id="continue-btn">Continue</button>
+  </div>
+  
+  <div id="setup" style="display: none;">
+    <label for="player-name">Enter Your Name:</label>
+    <input type="text" id="player-name" placeholder="Your name" />
+    <br><br>
+
+    <label for="time-select">Select Time:</label>
+    <select id="time-select">
+      <option value="60" selected>1 minute</option>
+      <option value="120">2 minutes</option>
+      <option value="180">3 minutes</option>
+      <option value="300">5 minutes</option>
+    </select>
+
+    <label for="level-select">Select Level:</label>
+    <select id="level-select">
+      <option value="easy" selected>Easy (1–10)</option>
+      <option value="medium">Medium (11–20)</option>
+      <option value="hard">Hard (21–30)</option>
+    </select>
+
+    <br><br>
+    <button id="start-btn">Start Game</button>
+  </div>
+
+  <div id="game-area" style="display: none;">
+    <div id="question">Loading...</div>
+
+    <input type="number" id="answer-input" placeholder="Answer" />
+    <button id="submit-btn">Submit</button>
+
+    <div id="feedback"></div>
+    <div id="level-indicator"></div>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time Left: 60s</div>
+    <button id="restart-btn" style="display: none;">🔁 Restart Game</button>
+  </div>
+
+  <div id="high-score-board"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
