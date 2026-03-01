@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factor Force 🚀</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #FFD93D;
+  --orange: #FF6B35;
+  --pink: #FF4D8D;
+  --blue: #4ECDC4;
+  --purple: #A855F7;
+  --green: #22C55E;
+  --red: #EF4444;
+  --dark: #0d1117;
+  --card: #161b22;
+  --card2: #21262d;
+  --border: #30363d;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--dark);
+  color: #e6edf3;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(168,85,247,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(78,205,196,0.07) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; position: relative; z-index: 1; }
+.screen.active { display: block; }
+.container { max-width: 700px; margin: 0 auto; padding: 20px 16px; }
+
+/* ── WELCOME SCREEN ── */
+.logo {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(2.8rem, 8vw, 4.5rem);
+  text-align: center;
+  background: linear-gradient(135deg, var(--yellow), var(--orange), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1.1; margin-bottom: 6px;
+}
+.tagline { text-align: center; color: #8b949e; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 36px; }
+
+.name-input-wrap { margin-bottom: 20px; }
+.name-input-wrap label { display: block; font-weight: 700; color: #8b949e; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.name-input-wrap input {
+  width: 100%; padding: 14px 18px;
+  background: var(--card2); border: 2px solid var(--border);
+  border-radius: 14px; color: #e6edf3;
+  font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700;
+  outline: none; transition: border-color 0.2s;
+}
+.name-input-wrap input:focus { border-color: var(--blue); }
+.name-input-wrap input::placeholder { color: #484f58; }
+
+.diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 28px; }
+.diff-card {
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: 16px; padding: 16px 12px; text-align: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.diff-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+.diff-card.selected { border-color: var(--yellow); background: rgba(255,217,61,0.06); }
+.diff-card .diff-icon { font-size: 2rem; margin-bottom: 6px; }
+.diff-card .diff-name { font-family: 'Fredoka One', cursive; font-size: 1.1rem; }
+.diff-card .diff-desc { font-size: 0.72rem; color: #8b949e; margin-top: 4px; line-height: 1.4; }
+.diff-card.selected .diff-name { color: var(--yellow); }
+
+.start-btn {
+  display: block; width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  border: none; border-radius: 16px;
+  font-family: 'Fredoka One', cursive; font-size: 1.4rem;
+  color: white; cursor: pointer; transition: all 0.2s;
+}
+.start-btn:hover { transform: scale(1.02); opacity: 0.95; }
+
+/* ── HUD ── */
+.hud {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.hud-name {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.1rem; color: var(--blue); flex: 1;
+}
+.lives { display: flex; gap: 4px; align-items: center; }
+.heart { font-size: 1.4rem; transition: all 0.3s; }
+.heart.lost { filter: grayscale(1); opacity: 0.3; transform: scale(0.8); }
+.score-badge {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 50px; padding: 6px 14px;
+  font-family: 'Fredoka One', cursive; font-size: 1rem;
+}
+.score-badge span { color: var(--yellow); }
+.streak-badge {
+  background: rgba(255,107,53,0.15); border: 1px solid rgba(255,107,53,0.4);
+  border-radius: 50px; padding: 6px 12px;
+  font-family: 'Fredoka One', cursive; font-size: 0.85rem; color: var(--orange);
+  display: none; align-items: center; gap: 4px;
+}
+.streak-badge.show { display: flex; animation: popIn 0.3s; }
+.diff-badge {
+  border-radius: 50px; padding: 4px 12px;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+}
+.diff-badge.cadet { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.diff-badge.explorer { background: rgba(78,205,196,0.15); color: var(--blue); border: 1px solid rgba(78,205,196,0.3); }
+.diff-badge.champion { background: rgba(168,85,247,0.15); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+
+/* ── TIMER ── */
+.timer-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.timer-bar-bg {
+  flex: 1; height: 8px; background: var(--card2);
+  border-radius: 50px; overflow: hidden;
+}
+.timer-bar {
+  height: 100%; border-radius: 50px;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  transition: width 0.1s linear, background 0.5s;
+}
+.timer-bar.danger { background: linear-gradient(90deg, var(--red), var(--orange)); }
+.timer-num {
+  font-family: 'Fredoka One', cursive; font-size: 1rem;
+  color: #8b949e; min-width: 28px; text-align: right;
+}
+.timer-num.danger { color: var(--red); }
+
+/* ── GAME CARD ── */
+.game-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 24px; padding: 24px 20px; margin-bottom: 14px;
+  min-height: 260px;
+}
+.q-type-pill {
+  display: inline-block; border-radius: 50px; padding: 4px 14px;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+.qt-prime { background: rgba(255,77,141,0.15); color: var(--pink); border: 1px solid rgba(255,77,141,0.3); }
+.qt-factors { background: rgba(78,205,196,0.15); color: var(--blue); border: 1px solid rgba(78,205,196,0.3); }
+.qt-isfactor { background: rgba(168,85,247,0.15); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+.qt-count { background: rgba(255,107,53,0.15); color: var(--orange); border: 1px solid rgba(255,107,53,0.3); }
+.qt-pair { background: rgba(255,217,61,0.15); color: var(--yellow); border: 1px solid rgba(255,217,61,0.3); }
+
+.q-text { font-size: 1.05rem; color: #8b949e; margin-bottom: 10px; line-height: 1.5; }
+.q-text strong { color: #e6edf3; }
+.q-number {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  line-height: 1; text-align: center;
+  background: linear-gradient(135deg, var(--yellow), var(--orange));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 4px;
+}
+.q-sub { text-align: center; font-size: 0.9rem; color: #8b949e; margin-bottom: 20px; }
+
+/* Yes/No big buttons */
+.yn-wrap { display: flex; gap: 14px; justify-content: center; }
+.yn-btn {
+  flex: 1; max-width: 200px; padding: 18px 10px;
+  border-radius: 16px; font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem; cursor: pointer; border: 3px solid;
+  transition: all 0.2s;
+}
+.yn-btn.yes { background: rgba(34,197,94,0.1); border-color: var(--green); color: var(--green); }
+.yn-btn.no { background: rgba(239,68,68,0.1); border-color: var(--red); color: var(--red); }
+.yn-btn:hover:not(:disabled) { transform: scale(1.04); }
+.yn-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Number grid */
+.num-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 7px; margin-bottom: 14px;
+}
+.ng-btn {
+  aspect-ratio: 1; border-radius: 10px;
+  border: 2px solid var(--border); background: var(--card2);
+  color: #e6edf3; font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+  cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; justify-content: center;
+}
+.ng-btn:hover:not(.disabled) { border-color: var(--blue); background: rgba(78,205,196,0.1); transform: scale(1.06); }
+.ng-btn.selected { border-color: var(--yellow); background: rgba(255,217,61,0.12); color: var(--yellow); }
+.ng-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.15); color: var(--green); animation: pop 0.3s; }
+.ng-btn.missed { border-color: var(--orange); background: rgba(255,107,53,0.15); color: var(--orange); }
+.ng-btn.wrong-sel { border-color: var(--red); background: rgba(239,68,68,0.15); color: var(--red); animation: shake 0.3s; }
+.ng-btn.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+/* Multiple choice */
+.mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mc-btn {
+  padding: 16px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--card2);
+  color: #e6edf3; font-family: 'Fredoka One', cursive; font-size: 1.3rem;
+  cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.mc-btn:hover:not(:disabled) { border-color: var(--purple); background: rgba(168,85,247,0.1); transform: scale(1.02); }
+.mc-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.15); color: var(--green); }
+.mc-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.15); color: var(--red); }
+.mc-btn:disabled { cursor: not-allowed; }
+
+/* Factor pair fill-in */
+.pair-wrap { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.pair-num {
+  font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: var(--blue);
+}
+.pair-box {
+  font-family: 'Fredoka One', cursive; font-size: 2rem;
+  width: 80px; height: 64px;
+  background: var(--card2); border: 3px solid var(--border);
+  border-radius: 14px; color: var(--yellow);
+  text-align: center; outline: none;
+  transition: border-color 0.2s;
+}
+.pair-box:focus { border-color: var(--yellow); }
+.pair-box.correct { border-color: var(--green); color: var(--green); }
+.pair-box.wrong { border-color: var(--red); color: var(--red); }
+.pair-eq { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: #484f58; }
+.pair-submit {
+  display: block; width: 100%; margin-top: 14px;
+  padding: 13px; background: linear-gradient(135deg, var(--blue), var(--purple));
+  border: none; border-radius: 14px; color: white;
+  font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.pair-submit:hover { opacity: 0.9; }
+.pair-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.submit-factors {
+  display: block; width: 100%;
+  padding: 13px; background: linear-gradient(135deg, var(--blue), var(--purple));
+  border: none; border-radius: 14px; color: white;
+  font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.submit-factors:hover { opacity: 0.9; }
+.submit-factors:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── EXPLAINER ── */
+.explainer {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 18px; padding: 18px 20px; margin-bottom: 14px;
+  display: none; animation: fadeUp 0.35s;
+}
+.explainer.show { display: block; }
+.explainer-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.explainer-icon { font-size: 1.4rem; }
+.explainer-title { font-family: 'Fredoka One', cursive; font-size: 1rem; }
+.explainer-title.correct-title { color: var(--green); }
+.explainer-title.wrong-title { color: var(--red); }
+.explainer-body { font-size: 0.88rem; color: #8b949e; line-height: 1.7; }
+.explainer-body strong { color: #e6edf3; }
+.explainer-body .highlight { color: var(--yellow); font-weight: 800; }
+.factor-tree {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 8px 0; align-items: center;
+}
+.ft-num {
+  background: rgba(255,217,61,0.12); border: 1px solid rgba(255,217,61,0.3);
+  border-radius: 8px; padding: 3px 10px;
+  font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--yellow);
+}
+.ft-prime {
+  background: rgba(255,77,141,0.12); border: 1px solid rgba(255,77,141,0.3);
+  border-radius: 8px; padding: 3px 10px;
+  font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--pink);
+}
+.ft-op { color: #484f58; font-size: 0.9rem; margin: 0 2px; }
+.pairs-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.pair-chip {
+  background: rgba(78,205,196,0.1); border: 1px solid rgba(78,205,196,0.25);
+  border-radius: 8px; padding: 4px 12px;
+  font-family: 'Fredoka One', cursive; font-size: 0.9rem; color: var(--blue);
+}
+
+/* ── NEXT BTN ── */
+.next-btn {
+  display: block; width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  border: none; border-radius: 14px; color: white;
+  font-family: 'Fredoka One', cursive; font-size: 1.2rem;
+  cursor: pointer; transition: all 0.2s; margin-bottom: 14px;
+}
+.next-btn:hover { transform: scale(1.01); opacity: 0.95; }
+
+/* ── GAME OVER SCREEN ── */
+.go-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 24px; padding: 32px 24px; text-align: center; margin-bottom: 20px;
+}
+.go-title {
+  font-family: 'Fredoka One', cursive; font-size: 2.5rem; margin-bottom: 4px;
+  background: linear-gradient(135deg, var(--yellow), var(--orange), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.go-subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 24px; }
+.go-score-big {
+  font-family: 'Fredoka One', cursive; font-size: 5rem; line-height: 1;
+  color: var(--yellow); margin-bottom: 4px;
+}
+.go-score-label { color: #8b949e; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--card2); border-radius: 14px; padding: 14px;
+  border: 1px solid var(--border); text-align: left;
+}
+.stat-label { font-size: 0.72rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.stat-value { font-family: 'Fredoka One', cursive; font-size: 1.5rem; }
+.stat-sub { font-size: 0.72rem; color: #8b949e; margin-top: 2px; }
+
+.accuracy-breakdown { margin-bottom: 24px; text-align: left; }
+.ab-title { font-family: 'Fredoka One', cursive; color: var(--blue); margin-bottom: 12px; font-size: 1rem; }
+.ab-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.ab-name { font-size: 0.8rem; color: #8b949e; min-width: 130px; }
+.ab-bar-bg { flex: 1; height: 8px; background: var(--card2); border-radius: 50px; overflow: hidden; }
+.ab-bar { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--blue), var(--purple)); }
+.ab-pct { font-family: 'Fredoka One', cursive; font-size: 0.85rem; min-width: 36px; text-align: right; }
+
+.play-again-btn {
+  display: block; width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  border: none; border-radius: 16px; color: white;
+  font-family: 'Fredoka One', cursive; font-size: 1.3rem;
+  cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
+}
+.play-again-btn:hover { transform: scale(1.02); }
+.change-diff-btn {
+  display: block; width: 100%; padding: 13px;
+  background: var(--card2); border: 2px solid var(--border);
+  border-radius: 14px; color: #8b949e;
+  font-family: 'Fredoka One', cursive; font-size: 1rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.change-diff-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ── ANIMATIONS ── */
+@keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+@keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+@keyframes fadeUp { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes heartLost { 0%{transform:scale(1)} 30%{transform:scale(1.4)} 60%{transform:scale(0.6)} 100%{transform:scale(1)} }
+.heart-shake { animation: heartLost 0.4s; }
+
+.confetti-piece {
+  position: fixed; top: -10px;
+  width: 8px; height: 8px; pointer-events: none;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  to { transform: translateY(110vh) rotate(900deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ WELCOME SCREEN ════════ -->
+<div id="welcomeScreen" class="screen active">
+<div class="container">
+  <div style="padding-top:40px;padding-bottom:40px">
+    <div class="logo">Factor Force 🚀</div>
+    <div class="tagline">Factors &amp; Prime Numbers · Solo Challenge</div>
+
+    <div class="name-input-wrap">
+      <label>Your name</label>
+      <input type="text" id="playerName" placeholder="Enter your name..." maxlength="20" />
+    </div>
+
+    <div style="font-weight:700;color:#8b949e;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Choose difficulty</div>
+    <div class="diff-grid">
+      <div class="diff-card selected" data-diff="cadet" onclick="selectDiff(this)">
+        <div class="diff-icon">🌱</div>
+        <div class="diff-name">Cadet</div>
+        <div class="diff-desc">Numbers up to 60 · 20 sec timer</div>
+      </div>
+      <div class="diff-card" data-diff="explorer" onclick="selectDiff(this)">
+        <div class="diff-icon">🔭</div>
+        <div class="diff-name">Explorer</div>
+        <div class="diff-desc">Numbers up to 100 · 15 sec timer</div>
+      </div>
+      <div class="diff-card" data-diff="champion" onclick="selectDiff(this)">
+        <div class="diff-icon">🏆</div>
+        <div class="diff-name">Champion</div>
+        <div class="diff-desc">Numbers up to 200 · 10 sec timer</div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">Let's Go! 🚀</button>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:20px;font-size:0.83rem;color:#8b949e;line-height:1.7;">
+      <div style="font-family:'Fredoka One',cursive;color:var(--blue);margin-bottom:6px;">📚 Five question types</div>
+      <strong style="color:#e6edf3;">⭐ Prime or Composite?</strong> · <strong style="color:#e6edf3;">🔢 Find All Factors</strong> · <strong style="color:#e6edf3;">🎯 Is X a factor of Y?</strong> · <strong style="color:#e6edf3;">🔢 Count the Factors</strong> · <strong style="color:#e6edf3;">🧩 Find the Factor Pair</strong>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════ GAME SCREEN ════════ -->
+<div id="gameScreen" class="screen">
+<div class="container">
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-name" id="hudName">Player</div>
+    <div class="diff-badge cadet" id="diffBadge">Cadet</div>
+    <div class="streak-badge" id="streakBadge">🔥 <span id="streakCount">0</span>x streak!</div>
+    <div class="score-badge">⭐ <span id="hudScore">0</span></div>
+    <div class="lives" id="livesWrap">
+      <div class="heart" id="h0">❤️</div>
+      <div class="heart" id="h1">❤️</div>
+      <div class="heart" id="h2">❤️</div>
+    </div>
+  </div>
+
+  <!-- Timer -->
+  <div class="timer-wrap">
+    <div class="timer-bar-bg"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
+    <div class="timer-num" id="timerNum">20</div>
+  </div>
+
+  <!-- Question card -->
+  <div class="game-card" id="gameCard">
+    <!-- Filled by JS -->
+  </div>
+
+  <!-- Explainer -->
+  <div class="explainer" id="explainer">
+    <div class="explainer-header">
+      <div class="explainer-icon" id="explIcon">💡</div>
+      <div class="explainer-title" id="explTitle">Let's break it down</div>
+    </div>
+    <div class="explainer-body" id="explBody"></div>
+  </div>
+
+  <!-- Next button -->
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()" style="display:none">
+    Next Question ➡️
+  </button>
+
+  <!-- Q counter -->
+  <div style="text-align:center;color:#484f58;font-size:0.78rem;font-weight:700;letter-spacing:1px;">
+    QUESTION <span id="qCounter">1</span> OF 15
+  </div>
+
+</div>
+</div>
+
+<!-- ════════ GAME OVER SCREEN ════════ -->
+<div id="gameOverScreen" class="screen">
+<div class="container">
+  <div style="padding-top:30px">
+  <div class="go-card">
+    <div class="go-title" id="goTitle">Game Over!</div>
+    <div class="go-subtitle" id="goSubtitle">Here's how you did</div>
+    <div class="go-score-big" id="goScore">0</div>
+    <div class="go-score-label">Total Points</div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Correct</div>
+        <div class="stat-value" id="goCorrect" style="color:var(--green)">0</div>
+        <div class="stat-sub" id="goTotal">of 0 questions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Streak</div>
+        <div class="stat-value" id="goBestStreak" style="color:var(--orange)">0</div>
+        <div class="stat-sub">in a row 🔥</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Accuracy</div>
+        <div class="stat-value" id="goAccuracy" style="color:var(--blue)">0%</div>
+        <div class="stat-sub" id="goAccSub"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Time Bonuses</div>
+        <div class="stat-value" id="goTimeBonus" style="color:var(--purple)">0</div>
+        <div class="stat-sub">speed points ⚡</div>
+      </div>
+    </div>
+
+    <div class="accuracy-breakdown" id="accuracyBreakdown"></div>
+  </div>
+
+  <button class="play-again-btn" onclick="playAgain()">Play Again 🚀</button>
+  <button class="change-diff-btn" onclick="showWelcome()">Change Difficulty</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  MATHS UTILITIES
+// ═══════════════════════════════════════════════
+function getFactors(n) {
+  const f = [];
+  for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
+  return f;
+}
+function isPrime(n) {
+  if (n < 2) return false;
+  for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+  return true;
+}
+function primeFactors(n) {
+  const factors = [];
+  let d = 2;
+  while (n > 1) {
+    while (n % d === 0) { factors.push(d); n /= d; }
+    d++;
+  }
+  return factors;
+}
+function getFactorPairs(n) {
+  const pairs = [];
+  for (let i = 1; i <= Math.sqrt(n); i++) {
+    if (n % i === 0) pairs.push([i, n / i]);
+  }
+  return pairs;
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function randFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// ═══════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════
+const DIFF_CONFIG = {
+  cadet:    { max: 60,  time: 20, label: 'Cadet',    badge: 'cadet' },
+  explorer: { max: 100, time: 15, label: 'Explorer', badge: 'explorer' },
+  champion: { max: 200, time: 10, label: 'Champion', badge: 'champion' },
+};
+const TOTAL_QUESTIONS = 15;
+const QTYPES = ['prime','factors','isfactor','count','pair'];
+const QTYPE_LABELS = {
+  prime:    'Prime or Composite?',
+  factors:  'Find All Factors',
+  isfactor: 'Is it a Factor?',
+  count:    'Count the Factors',
+  pair:     'Factor Pair',
+};
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let playerName = 'Player';
+let difficulty = 'cadet';
+let score = 0;
+let lives = 3;
+let streak = 0;
+let bestStreak = 0;
+let questionNum = 0;
+let answered = false;
+let timerInterval = null;
+let timerLeft = 20;
+let totalTime = 20;
+let currentQ = null;
+let totalTimeBonus = 0;
+// Stats per qtype
+let qStats = {}; // { prime: { correct:0, total:0 }, ... }
+QTYPES.forEach(t => qStats[t] = { correct: 0, total: 0 });
+
+// ═══════════════════════════════════════════════
+//  WELCOME / SETUP
+// ═══════════════════════════════════════════════
+function selectDiff(el) {
+  document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  difficulty = el.dataset.diff;
+}
+
+function startGame() {
+  const nameEl = document.getElementById('playerName');
+  playerName = nameEl.value.trim() || 'Explorer';
+  score = 0; lives = 3; streak = 0; bestStreak = 0; questionNum = 0; totalTimeBonus = 0;
+  QTYPES.forEach(t => qStats[t] = { correct: 0, total: 0 });
+
+  document.getElementById('hudName').textContent = playerName;
+  const cfg = DIFF_CONFIG[difficulty];
+  const badge = document.getElementById('diffBadge');
+  badge.textContent = cfg.label;
+  badge.className = 'diff-badge ' + cfg.badge;
+  updateLives();
+  updateScore();
+
+  showScreen('gameScreen');
+  generateQuestion();
+}
+
+function showWelcome() { showScreen('welcomeScreen'); }
+
+function playAgain() {
+  // keep same name + difficulty
+  document.getElementById('playerName').value = playerName;
+  startGame();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+//  QUESTION GENERATION
+// ═══════════════════════════════════════════════
+function generateQuestion() {
+  answered = false;
+  questionNum++;
+  document.getElementById('qCounter').textContent = questionNum;
+  document.getElementById('explainer').classList.remove('show');
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const cfg = DIFF_CONFIG[difficulty];
+  const qtype = randFrom(QTYPES);
+  currentQ = buildQuestion(qtype, cfg.max);
+
+  renderQuestion(currentQ);
+  startTimer(cfg.time);
+}
+
+function buildQuestion(qtype, max) {
+  const q = { type: qtype };
+
+  if (qtype === 'prime') {
+    // 50% prime, 50% composite
+    const usePrime = Math.random() < 0.5;
+    const candidates = [];
+    for (let i = 2; i <= max; i++) {
+      if (isPrime(i) === usePrime) candidates.push(i);
+    }
+    q.n = randFrom(candidates);
+    q.answer = isPrime(q.n);
+
+  } else if (qtype === 'factors') {
+    // Grid is only usable for smaller numbers — cap at 60 regardless of difficulty
+    const gridMax = Math.min(max, 60);
+    const candidates = [];
+    for (let i = 4; i <= gridMax; i++) {
+      if (!isPrime(i) && getFactors(i).length >= 4) candidates.push(i);
+    }
+    q.n = randFrom(candidates);
+    q.answer = getFactors(q.n);
+
+  } else if (qtype === 'isfactor') {
+    // Pick a number, then pick a potential factor (50% correct, 50% wrong)
+    q.n = randInt(6, max);
+    const factors = getFactors(q.n);
+    const nonFactors = [];
+    const checkMax = Math.min(q.n - 1, 100);
+    for (let i = 2; i <= checkMax; i++) {
+      if (!factors.includes(i)) nonFactors.push(i);
+    }
+    if (Math.random() < 0.5 || nonFactors.length === 0) {
+      // pick a real factor (not 1 or n itself)
+      const inner = factors.filter(f => f !== 1 && f !== q.n);
+      q.candidate = inner.length > 0 ? randFrom(inner) : factors[0];
+      q.answer = true;
+    } else {
+      q.candidate = randFrom(nonFactors.slice(0, 20));
+      q.answer = false;
+    }
+
+  } else if (qtype === 'count') {
+    // Pick any number, answer = # of factors, provide 4 MC options
+    const candidates = [];
+    for (let i = 4; i <= max; i++) candidates.push(i);
+    q.n = randFrom(candidates);
+    const correct = getFactors(q.n).length;
+    q.answer = correct;
+    // generate wrong options
+    const opts = new Set([correct]);
+    while (opts.size < 4) {
+      const o = correct + randFrom([-3,-2,-1,1,2,3,4]);
+      if (o > 0) opts.add(o);
+    }
+    q.options = shuffle([...opts]);
+
+  } else if (qtype === 'pair') {
+    // show a factor pair with one missing: n = a × ?
+    const candidates = [];
+    for (let i = 6; i <= max; i++) {
+      if (getFactorPairs(i).length >= 2) candidates.push(i);
+    }
+    q.n = randFrom(candidates);
+    const pairs = getFactorPairs(q.n);
+    const pair = randFrom(pairs.filter(p => p[0] !== p[1]) || pairs);
+    // Show either a×? = n or ?×b = n
+    if (Math.random() < 0.5) {
+      q.known = pair[0];
+      q.answer = pair[1];
+    } else {
+      q.known = pair[1];
+      q.answer = pair[0];
+    }
+  }
+
+  return q;
+}
+
+// ═══════════════════════════════════════════════
+//  RENDERING
+// ═══════════════════════════════════════════════
+function renderQuestion(q) {
+  const card = document.getElementById('gameCard');
+  const pillClass = { prime:'qt-prime', factors:'qt-factors', isfactor:'qt-isfactor', count:'qt-count', pair:'qt-pair' }[q.type];
+
+  let html = `<div class="q-type-pill ${pillClass}">${QTYPE_LABELS[q.type]}</div>`;
+
+  if (q.type === 'prime') {
+    html += `
+      <div class="q-number">${q.n}</div>
+      <div class="q-sub">Is this number <strong style="color:var(--pink)">prime</strong> or <strong style="color:var(--orange)">composite</strong>?</div>
+      <div class="yn-wrap">
+        <button class="yn-btn yes" onclick="answerYN(true)">⭐ Prime</button>
+        <button class="yn-btn no" onclick="answerYN(false)">🔗 Composite</button>
+      </div>`;
+
+  } else if (q.type === 'factors') {
+    let grid = '<div class="num-grid" id="factorGrid">';
+    for (let i = 1; i <= q.n; i++) {
+      grid += `<button class="ng-btn" data-v="${i}" onclick="toggleFactor(this,${i})">${i}</button>`;
+    }
+    grid += '</div>';
+    html += `
+      <div class="q-text">Tap <strong>every factor</strong> of the number below, then submit.</div>
+      <div class="q-number">${q.n}</div>
+      ${grid}
+      <button class="submit-factors" id="submitFactors" onclick="submitFactors()">Check My Factors 🚀</button>`;
+
+  } else if (q.type === 'isfactor') {
+    html += `
+      <div class="q-text">Is <strong>${q.candidate}</strong> a factor of...</div>
+      <div class="q-number">${q.n}</div>
+      <div class="q-sub">${q.candidate} × ? = ${q.n} — does it work?</div>
+      <div class="yn-wrap">
+        <button class="yn-btn yes" onclick="answerYN(true)">✅ Yes!</button>
+        <button class="yn-btn no" onclick="answerYN(false)">❌ No</button>
+      </div>`;
+
+  } else if (q.type === 'count') {
+    let mc = '<div class="mc-grid">';
+    q.options.forEach(o => {
+      mc += `<button class="mc-btn" onclick="answerMC(this,${o})">${o}</button>`;
+    });
+    mc += '</div>';
+    html += `
+      <div class="q-text">How many factors does this number have?</div>
+      <div class="q-number">${q.n}</div>
+      ${mc}`;
+
+  } else if (q.type === 'pair') {
+    html += `
+      <div class="q-text">Fill in the missing number to complete the <strong>factor pair</strong>:</div>
+      <div style="margin:16px 0">
+        <div class="q-number" style="font-size:clamp(1.5rem,5vw,2.5rem);margin-bottom:12px;">${q.n} = ${q.known} × ?</div>
+        <div class="pair-wrap">
+          <div class="pair-num">${q.known}</div>
+          <div class="pair-eq">×</div>
+          <input class="pair-box" id="pairInput" type="number" min="1" max="200" placeholder="?" onkeydown="if(event.key==='Enter')submitPair()">
+          <div class="pair-eq">=</div>
+          <div class="pair-num">${q.n}</div>
+        </div>
+      </div>
+      <button class="pair-submit" onclick="submitPair()">Check Answer ✓</button>`;
+  }
+
+  card.innerHTML = html;
+  if (q.type === 'pair') {
+    setTimeout(() => { const el = document.getElementById('pairInput'); if(el) el.focus(); }, 50);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  ANSWER HANDLERS
+// ═══════════════════════════════════════════════
+let selectedFactorSet = new Set();
+
+function toggleFactor(btn, val) {
+  if (answered) return;
+  if (selectedFactorSet.has(val)) {
+    selectedFactorSet.delete(val);
+    btn.classList.remove('selected');
+  } else {
+    selectedFactorSet.add(val);
+    btn.classList.add('selected');
+  }
+}
+
+function submitFactors() {
+  if (answered) return;
+  stopTimer();
+  answered = true;
+  document.getElementById('submitFactors').disabled = true;
+
+  const correct = new Set(currentQ.answer);
+  const selected = selectedFactorSet;
+  let allRight = true;
+  for (const v of correct) if (!selected.has(v)) { allRight = false; break; }
+  for (const v of selected) if (!correct.has(v)) { allRight = false; break; }
+
+  // Colour grid
+  document.querySelectorAll('.ng-btn').forEach(btn => {
+    const v = parseInt(btn.dataset.v);
+    if (correct.has(v) && selected.has(v)) { btn.classList.add('correct'); }
+    else if (selected.has(v) && !correct.has(v)) { btn.classList.add('wrong-sel'); }
+    else if (correct.has(v) && !selected.has(v)) { btn.classList.add('missed'); }
+    btn.classList.add('disabled');
+  });
+
+  selectedFactorSet.clear();
+  resolveAnswer(allRight, 3);
+}
+
+function answerYN(val) {
+  if (answered) return;
+  stopTimer();
+  answered = true;
+  document.querySelectorAll('.yn-btn').forEach(b => b.disabled = true);
+  const correct = (val === currentQ.answer);
+  resolveAnswer(correct, 2);
+}
+
+function answerMC(btn, val) {
+  if (answered) return;
+  stopTimer();
+  answered = true;
+  document.querySelectorAll('.mc-btn').forEach(b => b.disabled = true);
+  const correct = (val === currentQ.answer);
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    document.querySelectorAll('.mc-btn').forEach(b => {
+      if (parseInt(b.textContent) === currentQ.answer) b.classList.add('correct');
+    });
+  }
+  resolveAnswer(correct, 2);
+}
+
+function submitPair() {
+  if (answered) return;
+  const inp = document.getElementById('pairInput');
+  if (!inp || inp.value === '') return;
+  stopTimer();
+  answered = true;
+  document.querySelector('.pair-submit').disabled = true;
+  const val = parseInt(inp.value);
+  const correct = (val === currentQ.answer);
+  inp.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    inp.value = currentQ.answer;
+    inp.classList.remove('wrong'); inp.classList.add('correct');
+    setTimeout(() => { inp.value = parseInt(document.getElementById('pairInput').value); }, 0);
+  }
+  resolveAnswer(correct, 2);
+}
+
+// ═══════════════════════════════════════════════
+//  RESOLVE + FEEDBACK
+// ═══════════════════════════════════════════════
+function resolveAnswer(correct, basePoints) {
+  stopTimer();
+  qStats[currentQ.type].total++;
+
+  if (correct) {
+    qStats[currentQ.type].correct++;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+
+    // Points: base + time bonus + streak multiplier
+    const timeBonus = Math.floor((timerLeft / totalTime) * 3);
+    const multiplier = streak >= 5 ? 3 : streak >= 3 ? 2 : 1;
+    const pts = (basePoints + timeBonus) * multiplier;
+    totalTimeBonus += timeBonus;
+    score += pts;
+    updateScore();
+
+    const streakEl = document.getElementById('streakBadge');
+    document.getElementById('streakCount').textContent = streak;
+    if (streak >= 2) streakEl.classList.add('show'); else streakEl.classList.remove('show');
+
+    showExplainer(true, pts, multiplier, timeBonus);
+
+    if (questionNum >= TOTAL_QUESTIONS) {
+      document.getElementById('nextBtn').textContent = 'See Results 🏁';
+    }
+  } else {
+    streak = 0;
+    document.getElementById('streakBadge').classList.remove('show');
+    lives--;
+    updateLives();
+    showExplainer(false, 0, 1, 0);
+
+    if (lives <= 0) {
+      setTimeout(endGame, 2200);
+      return;
+    }
+
+    if (questionNum >= TOTAL_QUESTIONS) {
+      document.getElementById('nextBtn').textContent = 'See Results 🏁';
+    }
+  }
+
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════
+//  EXPLAINER
+// ═══════════════════════════════════════════════
+function showExplainer(correct, pts, multiplier, timeBonus) {
+  const expl = document.getElementById('explainer');
+  const icon = document.getElementById('explIcon');
+  const title = document.getElementById('explTitle');
+  const body = document.getElementById('explBody');
+
+  icon.textContent = correct ? '🎉' : '💡';
+  title.className = 'explainer-title ' + (correct ? 'correct-title' : 'wrong-title');
+
+  let scoreMsg = '';
+  if (correct) {
+    let parts = [`+${pts} points`];
+    if (timeBonus > 0) parts.push(`includes ⚡ +${timeBonus} speed bonus`);
+    if (multiplier > 1) parts.push(`🔥 ${multiplier}x streak multiplier!`);
+    title.textContent = `✅ Correct! ${parts.join(' · ')}`;
+  } else {
+    title.textContent = `❌ Not quite — here's the explanation:`;
+  }
+
+  body.innerHTML = buildExplanation(currentQ);
+  expl.classList.add('show');
+}
+
+function buildExplanation(q) {
+  const n = q.n || q.n;
+  const factors = getFactors(n || (q.known * q.answer));
+  const pf = primeFactors(n || (q.known * q.answer));
+  const pairs = getFactorPairs(n || (q.known * q.answer));
+
+  let html = '';
+
+  if (q.type === 'prime') {
+    const actualN = q.n;
+    const prime = isPrime(actualN);
+    if (prime) {
+      html += `<strong>${actualN} is PRIME</strong> — it has exactly <span class="highlight">2 factors: 1 and ${actualN}</span>.<br>
+      Try dividing ${actualN} by 2, 3, 5, 7… none of them go in evenly. That's how you test for primes!`;
+    } else {
+      const smallFactor = factors.find(f => f > 1 && f < actualN);
+      html += `<strong>${actualN} is COMPOSITE</strong> — it has <span class="highlight">${factors.length} factors</span>.<br>
+      It's composite because ${actualN} ÷ ${smallFactor} = ${actualN/smallFactor} (a whole number), so ${smallFactor} divides into it.<br>`;
+      html += `<br><strong>All factors of ${actualN}:</strong><div class="pairs-row">`;
+      factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
+      html += `</div>`;
+    }
+    html += buildPFTree(actualN, pf);
+
+  } else if (q.type === 'factors') {
+    html += `<strong>All ${factors.length} factors of ${q.n}:</strong><div class="pairs-row">`;
+    factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
+    html += `</div><br>`;
+    html += `<strong>💡 How to find them:</strong> Check every number from 1 to √${q.n} (≈ ${Math.ceil(Math.sqrt(q.n))}). If it divides in, both it <em>and</em> its partner are factors.<br><div class="pairs-row">`;
+    pairs.forEach(([a,b]) => html += `<div class="pair-chip">${a} × ${b}</div>`);
+    html += `</div>`;
+    html += buildPFTree(q.n, pf);
+
+  } else if (q.type === 'isfactor') {
+    const actuallyIs = (q.n % q.candidate === 0);
+    if (actuallyIs) {
+      html += `<strong>Yes, ${q.candidate} IS a factor of ${q.n}</strong><br>
+      ${q.n} ÷ ${q.candidate} = <span class="highlight">${q.n/q.candidate}</span> — it divides with no remainder.`;
+    } else {
+      const rem = q.n % q.candidate;
+      html += `<strong>${q.candidate} is NOT a factor of ${q.n}</strong><br>
+      ${q.n} ÷ ${q.candidate} = ${Math.floor(q.n/q.candidate)} remainder <span class="highlight">${rem}</span> — there's a remainder, so it doesn't divide evenly.`;
+    }
+    html += `<br><br><strong>The real factors of ${q.n} are:</strong><div class="pairs-row">`;
+    factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
+    html += `</div>`;
+
+  } else if (q.type === 'count') {
+    html += `<strong>${q.n} has <span class="highlight">${q.answer} factors</span>.</strong><br>
+    Here they all are:<div class="pairs-row">`;
+    factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
+    html += `</div><br><strong>💡 How to count them:</strong> Check every number from 1 to ${q.n}. If it divides in with no remainder, it's a factor. The factors always come in pairs — like ${getFactorPairs(q.n).map(([a,b])=>a+'×'+b).join(', ')}.`;
+    html += buildPFTree(q.n, pf);
+
+  } else if (q.type === 'pair') {
+    html += `<strong>${q.n} = ${q.known} × <span class="highlight">${q.answer}</span></strong><br>
+    ${q.n} ÷ ${q.known} = <span class="highlight">${q.answer}</span> — dividing is the easiest way to find the missing partner.<br><br>
+    <strong>All factor pairs of ${q.n}:</strong><div class="pairs-row">`;
+    pairs.forEach(([a,b]) => html += `<div class="pair-chip">${a} × ${b}</div>`);
+    html += `</div>`;
+    html += buildPFTree(q.n, pf);
+  }
+
+  return html;
+}
+
+function buildPFTree(n, pf) {
+  if (isPrime(n)) return '';
+  let html = `<br><strong>Prime factorisation of ${n}:</strong>`;
+  html += `<div class="factor-tree">`;
+  html += `<div class="ft-num">${n}</div>`;
+  html += `<div class="ft-op">=</div>`;
+  pf.forEach((f, i) => {
+    html += `<div class="ft-prime">${f}</div>`;
+    if (i < pf.length - 1) html += `<div class="ft-op">×</div>`;
+  });
+  html += `</div>`;
+  // Count powers
+  const counts = {};
+  pf.forEach(f => counts[f] = (counts[f]||0)+1);
+  const powStr = Object.entries(counts).map(([b,e]) => e > 1 ? `${b}^${e}` : b).join(' × ');
+  html += `<div style="color:#8b949e;font-size:0.8rem">Written with powers: <strong style="color:var(--pink)">${powStr}</strong></div>`;
+  return html;
+}
+
+// ═══════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════
+function startTimer(seconds) {
+  stopTimer();
+  timerLeft = seconds;
+  totalTime = seconds;
+  updateTimerUI();
+
+  timerInterval = setInterval(() => {
+    timerLeft -= 0.1;
+    if (timerLeft <= 0) {
+      timerLeft = 0;
+      updateTimerUI();
+      stopTimer();
+      if (!answered) timeUp();
+    } else {
+      updateTimerUI();
+    }
+  }, 100);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function updateTimerUI() {
+  const pct = Math.max(0, timerLeft / totalTime * 100);
+  const bar = document.getElementById('timerBar');
+  const num = document.getElementById('timerNum');
+  bar.style.width = pct + '%';
+  const danger = timerLeft <= totalTime * 0.3;
+  bar.classList.toggle('danger', danger);
+  num.classList.toggle('danger', danger);
+  num.textContent = Math.ceil(timerLeft);
+}
+
+function timeUp() {
+  if (answered) return;
+  answered = true;
+
+  // Disable all interactive elements
+  document.querySelectorAll('.yn-btn,.mc-btn,.ng-btn,.pair-submit,.submit-factors').forEach(b => b.disabled = true);
+
+  streak = 0;
+  document.getElementById('streakBadge').classList.remove('show');
+  lives--;
+  updateLives();
+
+  qStats[currentQ.type].total++;
+
+  // Show explainer with timeout message
+  const expl = document.getElementById('explainer');
+  document.getElementById('explIcon').textContent = '⏰';
+  const title = document.getElementById('explTitle');
+  title.className = 'explainer-title wrong-title';
+  title.textContent = "⏰ Time's up!";
+  document.getElementById('explBody').innerHTML = buildExplanation(currentQ);
+  expl.classList.add('show');
+  document.getElementById('nextBtn').style.display = 'block';
+
+  if (lives <= 0) {
+    setTimeout(endGame, 2200);
+  } else if (questionNum >= TOTAL_QUESTIONS) {
+    document.getElementById('nextBtn').textContent = 'See Results 🏁';
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  NEXT QUESTION
+// ═══════════════════════════════════════════════
+function nextQuestion() {
+  if (questionNum >= TOTAL_QUESTIONS) { endGame(); return; }
+  selectedFactorSet.clear();
+  generateQuestion();
+}
+
+// ═══════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════
+function updateScore() {
+  document.getElementById('hudScore').textContent = score;
+}
+
+function updateLives() {
+  for (let i = 0; i < 3; i++) {
+    const h = document.getElementById('h' + i);
+    if (i < lives) {
+      h.classList.remove('lost');
+    } else {
+      h.classList.add('lost');
+      h.classList.add('heart-shake');
+      setTimeout(() => h.classList.remove('heart-shake'), 400);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  END GAME
+// ═══════════════════════════════════════════════
+function endGame() {
+  stopTimer();
+  showScreen('gameOverScreen');
+
+  const totalQ = Object.values(qStats).reduce((a,b) => a + b.total, 0);
+  const totalCorrect = Object.values(qStats).reduce((a,b) => a + b.correct, 0);
+  const accuracy = totalQ > 0 ? Math.round(totalCorrect / totalQ * 100) : 0;
+
+  document.getElementById('goTitle').textContent = lives <= 0 ? 'Out of Lives! 💀' : '🏁 15 Questions Done!';
+  document.getElementById('goSubtitle').textContent = `Well done, ${playerName}!`;
+  document.getElementById('goScore').textContent = score;
+  document.getElementById('goCorrect').textContent = totalCorrect;
+  document.getElementById('goTotal').textContent = `of ${totalQ} questions`;
+  document.getElementById('goBestStreak').textContent = bestStreak;
+  document.getElementById('goAccuracy').textContent = accuracy + '%';
+  document.getElementById('goAccSub').textContent = accuracy >= 80 ? '🌟 Outstanding!' : accuracy >= 60 ? '👍 Good work!' : '📚 Keep practising!';
+  document.getElementById('goTimeBonus').textContent = totalTimeBonus;
+
+  // Accuracy breakdown
+  let ab = '<div class="ab-title">📊 Accuracy by question type</div>';
+  QTYPES.forEach(t => {
+    const s = qStats[t];
+    if (s.total === 0) return;
+    const pct = Math.round(s.correct / s.total * 100);
+    ab += `<div class="ab-row">
+      <div class="ab-name">${QTYPE_LABELS[t]}</div>
+      <div class="ab-bar-bg"><div class="ab-bar" style="width:${pct}%"></div></div>
+      <div class="ab-pct">${pct}%</div>
+    </div>`;
+  });
+  document.getElementById('accuracyBreakdown').innerHTML = ab;
+
+  if (score > 0) launchConfetti();
+}
+
+// ═══════════════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════════════
+function launchConfetti() {
+  const colors = ['#FFD93D','#FF6B35','#FF4D8D','#4ECDC4','#A855F7','#22C55E'];
+  for (let i = 0; i < 70; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.background = randFrom(colors);
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      el.style.width = el.style.height = (6 + Math.random()*8) + 'px';
+      el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+      el.style.animationDelay = (Math.random() * 0.3) + 's';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }, i * 25);
+  }
+}
+</script>
+<footer style="text-align:center;padding:24px 16px 32px;position:relative;z-index:1;">
+  <a href="https://tamimsthinklab.com/" target="_blank" rel="noopener"
+     style="color:#484f58;font-size:0.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:color 0.2s;"
+     onmouseover="this.style.color='#4ECDC4'" onmouseout="this.style.color='#484f58'">
+    ⚡ Powered by Tamim's ThinkLab
+  </a>
+</footer>
+
+</body>
+</html>
