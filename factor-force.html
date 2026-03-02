@@ -384,17 +384,17 @@ body::before {
       <div class="diff-card selected" data-diff="cadet" onclick="selectDiff(this)">
         <div class="diff-icon">🌱</div>
         <div class="diff-name">Cadet</div>
-        <div class="diff-desc">Numbers up to 60 · 20 sec timer</div>
+        <div class="diff-desc">Numbers up to 60 · 30 sec timer</div>
       </div>
       <div class="diff-card" data-diff="explorer" onclick="selectDiff(this)">
         <div class="diff-icon">🔭</div>
         <div class="diff-name">Explorer</div>
-        <div class="diff-desc">Numbers up to 100 · 15 sec timer</div>
+        <div class="diff-desc">Numbers up to 100 · 35 sec timer</div>
       </div>
       <div class="diff-card" data-diff="champion" onclick="selectDiff(this)">
         <div class="diff-icon">🏆</div>
         <div class="diff-name">Champion</div>
-        <div class="diff-desc">Numbers up to 200 · 10 sec timer</div>
+        <div class="diff-desc">Numbers up to 200 · 40 sec timer</div>
       </div>
     </div>
 
@@ -428,7 +428,7 @@ body::before {
   <!-- Timer -->
   <div class="timer-wrap">
     <div class="timer-bar-bg"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
-    <div class="timer-num" id="timerNum">20</div>
+    <div class="timer-num" id="timerNum">30</div>
   </div>
 
   <!-- Question card -->
@@ -447,7 +447,7 @@ body::before {
 
   <!-- Next button -->
   <button class="next-btn" id="nextBtn" onclick="nextQuestion()" style="display:none">
-    Next Question ➡️
+    Next Problem ➡️
   </button>
 
   <!-- Q counter -->
@@ -545,9 +545,9 @@ function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) 
 //  CONFIG
 // ═══════════════════════════════════════════════
 const DIFF_CONFIG = {
-  cadet:    { max: 60,  time: 20, label: 'Cadet',    badge: 'cadet' },
-  explorer: { max: 100, time: 15, label: 'Explorer', badge: 'explorer' },
-  champion: { max: 200, time: 10, label: 'Champion', badge: 'champion' },
+  cadet:    { max: 60,  time: 30, label: 'Cadet',    badge: 'cadet' },
+  explorer: { max: 100, time: 35, label: 'Explorer', badge: 'explorer' },
+  champion: { max: 200, time: 40, label: 'Champion', badge: 'champion' },
 };
 const TOTAL_QUESTIONS = 15;
 const QTYPES = ['prime','factors','isfactor','count','pair'];
@@ -571,8 +571,8 @@ let bestStreak = 0;
 let questionNum = 0;
 let answered = false;
 let timerInterval = null;
-let timerLeft = 20;
-let totalTime = 20;
+let timerLeft = 30;
+let totalTime = 30;
 let currentQ = null;
 let totalTimeBonus = 0;
 // Stats per qtype
@@ -628,6 +628,7 @@ function generateQuestion() {
   document.getElementById('qCounter').textContent = questionNum;
   document.getElementById('explainer').classList.remove('show');
   document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('nextBtn').textContent = 'Next Problem ➡️';
 
   const cfg = DIFF_CONFIG[difficulty];
   const qtype = randFrom(QTYPES);
@@ -898,9 +899,9 @@ function resolveAnswer(correct, basePoints) {
 
     showExplainer(true, pts, multiplier, timeBonus);
 
-    if (questionNum >= TOTAL_QUESTIONS) {
-      document.getElementById('nextBtn').textContent = 'See Results 🏁';
-    }
+    document.getElementById('nextBtn').textContent = questionNum >= TOTAL_QUESTIONS
+      ? 'See Results 🏁'
+      : 'Next Problem ➡️';
   } else {
     streak = 0;
     document.getElementById('streakBadge').classList.remove('show');
@@ -913,9 +914,9 @@ function resolveAnswer(correct, basePoints) {
       return;
     }
 
-    if (questionNum >= TOTAL_QUESTIONS) {
-      document.getElementById('nextBtn').textContent = 'See Results 🏁';
-    }
+    document.getElementById('nextBtn').textContent = questionNum >= TOTAL_QUESTIONS
+      ? 'See Results 🏁'
+      : 'Next Problem ➡️';
   }
 
   document.getElementById('nextBtn').style.display = 'block';
@@ -1095,8 +1096,10 @@ function timeUp() {
 
   if (lives <= 0) {
     setTimeout(endGame, 2200);
-  } else if (questionNum >= TOTAL_QUESTIONS) {
-    document.getElementById('nextBtn').textContent = 'See Results 🏁';
+  } else {
+    document.getElementById('nextBtn').textContent = questionNum >= TOTAL_QUESTIONS
+      ? 'See Results 🏁'
+      : 'Next Problem ➡️';
   }
 }
 
