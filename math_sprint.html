@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Sprint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #050b1f;
+      --bg-2: #0a2350;
+      --panel: rgba(8, 16, 36, 0.85);
+      --panel-border: rgba(0, 255, 204, 0.15);
+      --accent: #00ffcc;
+      --accent-soft: rgba(0, 255, 204, 0.12);
+      --warn: #ff5577;
+      --warn-soft: rgba(255, 85, 119, 0.12);
+      --good: #2ecc71;
+      --bad: #e74c3c;
+      --text: #f2f5fa;
+      --text-dim: #9aa6bf;
+      --tip-bg: rgba(241, 196, 15, 0.10);
+      --tip-border: rgba(241, 196, 15, 0.4);
+      --tip-text: #ffe18a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-feature-settings: "tnum"; /* tabular numerals */
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(0, 255, 204, 0.08), transparent 60%),
+        radial-gradient(900px 500px at 90% 100%, rgba(0, 78, 146, 0.45), transparent 60%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      color: var(--text);
+      margin: 0;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100%;
+    }
+
+    .brand {
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .panel {
+      background-color: var(--panel);
+      backdrop-filter: blur(8px);
+      padding: 28px 24px;
+      border-radius: 16px;
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      width: 100%;
+      max-width: 640px;
+      margin: 12px 0;
+      animation: rise 0.45s ease-out;
+    }
+
+    @keyframes rise {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h1, h2, h3 { color: var(--accent); margin: 0 0 16px; font-weight: 700; }
+    h1 { font-size: 28px; letter-spacing: -0.01em; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 16px; color: var(--text); }
+
+    label { font-weight: 500; color: var(--text-dim); font-size: 14px; }
+
+    .field { margin-bottom: 16px; text-align: left; }
+    .field label { display: block; margin-bottom: 6px; }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 17px;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 8px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 255, 204, 0.18);
+    }
+
+    select option { background: #0a1530; color: var(--text); }
+
+    .answer-input {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px 16px;
+      background-color: var(--accent);
+      color: #002b22;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+      transition: transform 0.08s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    button:hover { background-color: #5cffd9; box-shadow: 0 0 16px rgba(0, 255, 204, 0.4); }
+    button:active { transform: translateY(1px); }
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(0, 255, 204, 0.35);
+    }
+    button.secondary:hover { background: var(--accent-soft); box-shadow: none; }
+    button.ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    button.ghost:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); box-shadow: none; }
+
+    .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .button-row.three { grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 480px) { .button-row, .button-row.three { grid-template-columns: 1fr; } }
+
+    .rules { font-size: 14px; color: var(--text-dim); padding-left: 18px; margin: 8px 0 16px; }
+    .rules li { margin: 4px 0; }
+
+    /* Sound toggle */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .toggle-row .label-text { font-size: 14px; color: var(--text); }
+    .toggle-row .label-hint { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .switch {
+      position: relative; width: 44px; height: 24px;
+      background: rgba(255,255,255,0.12); border-radius: 999px; cursor: pointer; flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+    .switch::after {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+      background: #fff; border-radius: 50%; transition: left 0.2s ease;
+    }
+    .switch.on { background: var(--accent); }
+    .switch.on::after { left: 22px; }
+
+    /* Game screen */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .stat-pill {
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .stat-pill.score { color: var(--accent); background: var(--accent-soft); }
+    .stat-pill.score.negative { color: var(--warn); background: var(--warn-soft); }
+    .stat-pill.timer { color: var(--warn); background: var(--warn-soft); }
+    .sound-btn {
+      width: 36px; height: 36px; padding: 0; background: transparent;
+      border: 1px solid rgba(255,255,255,0.12); color: var(--text-dim); border-radius: 8px;
+      font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .sound-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); box-shadow: none; }
+
+    .question {
+      font-size: 30px;
+      font-weight: 700;
+      margin: 18px 0;
+      padding: 18px 12px;
+      letter-spacing: -0.01em;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+    }
+
+    /* Stacked fraction (used inline within questions) */
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      line-height: 1;
+      font-size: 0.85em;
+      margin: 0 4px;
+    }
+    .frac .num { padding: 0 6px 4px; border-bottom: 2px solid currentColor; }
+    .frac .den { padding: 4px 6px 0; }
+
+    /* Side-by-side option cards used by the fraction-compare question */
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+    }
+    .choice-card {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 12px;
+      min-width: 100px;
+    }
+    .choice-card .opt-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #002b22;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .choice-prompt {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .choice-hint {
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-top: 8px;
+      letter-spacing: 0;
+    }
+
+    .feedback {
+      text-align: center;
+      margin: 12px 0 0;
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 44px;
+      font-size: 15px;
+      font-weight: 500;
+      transition: opacity 0.3s ease;
+    }
+    .feedback.correct { background-color: rgba(46, 204, 113, 0.18); color: #7df0a8; }
+    .feedback.incorrect { background-color: rgba(231, 76, 60, 0.18); color: #ff8b80; }
+    .feedback.muted { background-color: rgba(255,255,255,0.05); color: var(--text-dim); }
+    .pulse { animation: pulse 0.35s ease-out; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+    .fade-in { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Result screen */
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin: 16px 0 22px;
+    }
+    .stat-box {
+      padding: 14px 10px;
+      border-radius: 10px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .stat-box .num {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+    .stat-box .label {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+    .stat-box.warn .num { color: var(--warn); }
+
+    .verdict {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .final-score {
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 4px 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .final-score.negative { color: var(--warn); }
+    .final-meta {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    /* Mistake review */
+    .mistake-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .mistake-q {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .mistake-line {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin: 2px 0;
+    }
+    .mistake-line .you { color: #ff8b80; font-weight: 600; }
+    .mistake-line .correct { color: #7df0a8; font-weight: 600; }
+    .mistake-tip {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: var(--tip-bg);
+      border-left: 3px solid var(--tip-border);
+      border-radius: 6px;
+      color: var(--tip-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .mistake-tip strong { color: #fff3c2; }
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-dim);
+    }
+    .empty-state .big { font-size: 40px; margin-bottom: 8px; }
+
+    /* Leaderboard */
+    .lb-list { list-style: none; padding: 0; margin: 0 0 8px; }
+    .lb-list li {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 15px;
+    }
+    .lb-list li.is-new {
+      background: var(--accent-soft);
+      border-color: rgba(0, 255, 204, 0.4);
+    }
+    .lb-rank { color: var(--text-dim); font-weight: 600; text-align: center; }
+    .lb-name { font-weight: 600; }
+    .lb-meta { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .lb-score { color: var(--accent); font-weight: 700; }
+    .lb-list li.is-new .lb-score::after { content: ' ⭐ NEW'; font-size: 11px; color: var(--accent); }
+
+    .lb-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      margin: 16px 0 8px;
+      color: var(--text-dim);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Hide spinner buttons on number input (cosmetic; we use inputmode anyway) */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+  </style>
+</head>
+<body>
+  <div class="brand">Math Sprint</div>
+
+  <!-- Intro Screen -->
+  <div class="panel" id="intro-screen">
+    <p class="final-meta" style="margin: 0 0 20px; font-size: 16px;">Calculate fast. Build insight. Beat your best.</p>
+
+    <div class="field">
+      <label for="player-name">Your name</label>
+      <input type="text" id="player-name" placeholder="e.g. Sara" autocomplete="off" maxlength="20">
+    </div>
+
+    <div class="field">
+      <label for="grade-level">Level</label>
+      <select id="grade-level">
+        <option value="3">Year 3–4 · Easy</option>
+        <option value="4">Year 4–5 · Medium</option>
+        <option value="5" selected>Year 5–6 · Hard</option>
+        <option value="6">Year 6–7 · Extreme</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="game-duration">Game duration</label>
+      <select id="game-duration">
+        <option value="60">1 minute</option>
+        <option value="120">2 minutes</option>
+        <option value="180" selected>3 minutes</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+      </select>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="label-text">Sound</div>
+        <div class="label-hint">Plays a chime at game end.</div>
+      </div>
+      <div class="switch on" id="sound-switch" role="switch" aria-checked="true" tabindex="0"></div>
+    </div>
+
+    <h2>Rules</h2>
+    <ul class="rules">
+      <li>Answer as many as you can before time runs out</li>
+      <li>Correct: <strong>+3</strong> · Incorrect: <strong>−1</strong></li>
+      <li id="operations-list">Mix of arithmetic and insight questions</li>
+      <li>Press <strong>Enter</strong> to submit</li>
+    </ul>
+
+    <button onclick="startGame()">Start</button>
+    <div style="height:8px;"></div>
+    <button class="ghost" onclick="showLeaderboardFromIntro()">View leaderboard</button>
+  </div>
+
+  <!-- Game Screen -->
+  <div class="panel" id="game-screen" style="display:none;">
+    <div class="stats">
+      <div class="stat-pill score">Score <span id="score">0</span></div>
+      <button class="sound-btn" id="sound-btn-game" onclick="toggleSound()" title="Toggle sound" aria-label="Toggle sound">🔇</button>
+      <div class="stat-pill timer">⏱ <span id="timer">3:00</span></div>
+    </div>
+    <div class="question" id="question"></div>
+    <input type="number" id="answer" placeholder="Your answer" inputmode="decimal" autocomplete="off">
+    <div style="height:10px;"></div>
+    <button id="submit-btn" onclick="checkAnswer()">Submit</button>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- Result Screen -->
+  <div class="panel" id="result-screen" style="display:none;">
+    <div class="verdict" id="verdict"></div>
+    <div class="final-score" id="final-score">0</div>
+    <div class="final-meta" id="final-meta"></div>
+
+    <div class="result-stats">
+      <div class="stat-box"><span class="num" id="correct-count">0</span><div class="label">Correct</div></div>
+      <div class="stat-box warn"><span class="num" id="incorrect-count">0</span><div class="label">Incorrect</div></div>
+      <div class="stat-box"><span class="num" id="total-count">0</span><div class="label">Total</div></div>
+      <div class="stat-box"><span class="num" id="accuracy">0%</span><div class="label">Accuracy</div></div>
+      <div class="stat-box"><span class="num" id="qpm">0</span><div class="label">Per minute</div></div>
+      <div class="stat-box"><span class="num" id="avg-time">0s</span><div class="label">Avg time</div></div>
+    </div>
+
+    <div class="button-row">
+      <button onclick="showMistakeReview()" id="review-btn">Review mistakes</button>
+      <button class="secondary" onclick="showLeaderboard()">Leaderboard</button>
+    </div>
+    <div style="height:8px;"></div>
+    <button class="ghost" onclick="resetGame()">Play again</button>
+  </div>
+
+  <!-- Mistake Review Screen -->
+  <div class="panel" id="review-screen" style="display:none;">
+    <h1>Review your mistakes</h1>
+    <p class="final-meta" style="margin-top:-8px;">Each tip shows a faster way to think about the problem.</p>
+    <div id="mistake-list"></div>
+    <button class="ghost" onclick="backToResult()">← Back to results</button>
+  </div>
+
+  <!-- Leaderboard Screen -->
+  <div class="panel" id="leaderboard-screen" style="display:none;">
+    <h1>Leaderboard</h1>
+    <div class="lb-controls">
+      <select id="lb-level"></select>
+      <select id="lb-duration"></select>
+    </div>
+    <ol class="lb-list" id="lb-list"></ol>
+    <p class="final-meta" id="lb-meta"></p>
+    <button class="ghost" onclick="backToResult()">← Back</button>
+  </div>
+
+  <footer class="footer">
+    <p>Powered by <a href="https://tamimsthinklab.com/" target="_blank" rel="noopener">Tamim's ThinkLab</a></p>
+  </footer>
+
+  <script>
+  // ===== State =====
+  let score = 0;
+  let timeLeft = 180;
+  let gameDuration = 180;
+  let timerInterval = null;
+  let currentQuestion = null;
+  let questionStartTime = 0;
+  let correctAnswers = 0;
+  let incorrectAnswers = 0;
+  let totalAnswered = 0;
+  let gradeLevel = 5;
+  let playerName = "";
+  let mistakes = []; // {text, userAnswer, correctAnswer, tip, topic}
+  let responseTimes = []; // ms
+  let soundEnabled = false;
+  let lastNewLeaderboardIdx = -1;
+  let leaderboardOrigin = 'result'; // 'result' or 'intro'
+  let wrongAnswerTimeout = null;     // tracks the 900ms pause timer
+  let awaitingNext = false;          // true while we're holding for the next question
+  let gameStartedAt = 0;             // wall-clock ms when current game started
+
+  // ===== Persistence =====
+  const LS_SOUND = 'tlms_sound';
+  const LS_LB = 'tlms_lb_v1';
+
+  function loadSoundPref() {
+    const v = localStorage.getItem(LS_SOUND);
+    // Default ON — only off if the user has explicitly turned it off.
+    soundEnabled = (v === null) ? true : (v === '1');
+    updateSoundUI();
+  }
+  function saveSoundPref() {
+    localStorage.setItem(LS_SOUND, soundEnabled ? '1' : '0');
+  }
+
+  function getAllLeaderboards() {
+    try { return JSON.parse(localStorage.getItem(LS_LB) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function saveAllLeaderboards(obj) {
+    try { localStorage.setItem(LS_LB, JSON.stringify(obj)); }
+    catch (e) { /* quota */ }
+  }
+  function lbKey(level, duration) { return level + '_' + duration; }
+  function getLeaderboard(level, duration) {
+    const all = getAllLeaderboards();
+    return all[lbKey(level, duration)] || [];
+  }
+  function recordScore(level, duration, entry) {
+    const all = getAllLeaderboards();
+    const key = lbKey(level, duration);
+    const list = all[key] || [];
+    list.push(entry);
+    list.sort((a, b) => b.score - a.score);
+    list.length = Math.min(list.length, 10);
+    all[key] = list;
+    saveAllLeaderboards(all);
+    // Returns -1 if entry was truncated off the bottom of the top 10.
+    return list.indexOf(entry);
+  }
+
+  // ===== Sound =====
+  function updateSoundUI() {
+    const btn = document.getElementById('sound-btn-game');
+    if (btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+    const sw = document.getElementById('sound-switch');
+    if (sw) {
+      sw.classList.toggle('on', soundEnabled);
+      sw.setAttribute('aria-checked', soundEnabled ? 'true' : 'false');
+    }
+  }
+  function toggleSound() {
+    soundEnabled = !soundEnabled;
+    saveSoundPref();
+    updateSoundUI();
+  }
+
+  // Single shared AudioContext — creating one per game leaks (browsers cap at ~6).
+  let sharedAudioCtx = null;
+  function getAudioContext() {
+    if (!sharedAudioCtx) {
+      try {
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) return null;
+        sharedAudioCtx = new Ctor();
+      } catch (e) { return null; }
+    }
+    if (sharedAudioCtx.state === 'suspended') {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+    return sharedAudioCtx;
+  }
+
+  function playEndSound(scoreVal) {
+    if (!soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    try {
+      const notes = scoreVal >= 30 ? [523.25, 659.25, 783.99, 1046.50] // C E G C
+                                   : [523.25, 659.25, 783.99]; // C E G
+      let t = ctx.currentTime;
+      notes.forEach((freq) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.18, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.34);
+        t += 0.18;
+      });
+    } catch (e) { /* ignore */ }
+  }
+
+  // ===== Helpers =====
+  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // Render an inline stacked fraction as HTML. Accepts numbers or strings (e.g., '?').
+  function frac(n, d) {
+    return `<span class="frac" role="math" aria-label="${n} over ${d}"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+  }
+
+  function fmtTime(ms) {
+    if (!isFinite(ms) || ms <= 0) return '0s';
+    const s = ms / 1000;
+    return (s < 10 ? s.toFixed(1) : Math.round(s).toString()) + 's';
+  }
+
+  // Cancel any in-flight wrong-answer pause. Safe to call repeatedly.
+  function cancelWrongAnswerPause() {
+    if (wrongAnswerTimeout) {
+      clearTimeout(wrongAnswerTimeout);
+      wrongAnswerTimeout = null;
+    }
+    awaitingNext = false;
+    const inputEl = document.getElementById('answer');
+    const submitBtn = document.getElementById('submit-btn');
+    if (inputEl) inputEl.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
+  }
+
+  // Update the in-game score pill, including red styling when negative.
+  function updateScoreDisplay() {
+    const el = document.getElementById('score');
+    el.textContent = score;
+    el.parentElement.classList.toggle('negative', score < 0);
+  }
+
+  // ===== Question generators =====
+  // Each returns { text, answer, tip, topic, isMultipleChoice? }
+
+  function qAddition(grade) {
+    let n1, n2;
+    if (grade <= 3) { n1 = rand(10, 50); n2 = rand(10, 50); }
+    else if (grade === 4) { n1 = rand(20, 200); n2 = rand(20, 200); }
+    else if (grade === 5) { n1 = rand(50, 500); n2 = rand(50, 500); }
+    else { n1 = rand(100, 999); n2 = rand(100, 999); }
+    const ans = n1 + n2;
+    let tip;
+    if (n2 % 10 === 0) {
+      // Already round; just show the column add intuition
+      const tens = Math.floor(n2 / 10) * 10;
+      tip = `${n2} is round. Add the tens straight onto ${n1}: ${n1} + ${tens} = ${ans}.`;
+    } else {
+      const round = Math.round(n2 / 10) * 10;
+      const diff = round - n2;
+      tip = `Round ${n2} to ${round}, then adjust. ${n1} + ${round} = ${n1 + round}, ${diff >= 0 ? 'minus' : 'plus'} ${Math.abs(diff)} = ${ans}.`;
+    }
+    return { text: `${n1} + ${n2} = ?`, answer: ans, tip, topic: 'addition' };
+  }
+
+  function qSubtraction(grade) {
+    // Always n1 > n2 so answers are positive and never zero (no trivial freebies).
+    let n1, n2;
+    if (grade === 3) { n1 = rand(30, 100); n2 = rand(1, n1 - 1); }
+    else if (grade === 4) { n1 = rand(50, 250); n2 = rand(10, n1 - 1); }
+    else if (grade === 5) { n1 = rand(100, 500); n2 = rand(20, n1 - 1); }
+    else { n1 = rand(200, 999); n2 = rand(50, n1 - 1); }
+    const ans = n1 - n2;
+    let tip;
+    if (n2 % 10 === 0) {
+      tip = `${n2} is round. Subtract straight: ${n1} − ${n2} = ${ans}.`;
+    } else {
+      const round = Math.ceil(n2 / 10) * 10;
+      tip = `Round ${n2} up to ${round}: ${n1} − ${round} = ${n1 - round}, then add ${round - n2} back = ${ans}.`;
+    }
+    return { text: `${n1} − ${n2} = ?`, answer: ans, tip, topic: 'subtraction' };
+  }
+
+  function qMultiplication(grade) {
+    let n1, n2;
+    if (grade <= 4) { n1 = rand(2, 12); n2 = rand(2, 12); }
+    else if (grade === 5) {
+      // 2-digit × 1-digit
+      n1 = rand(11, 99); n2 = rand(2, 9);
+    } else {
+      // mix: 2-digit × 1-digit AND occasional 2-digit × 2-digit (small)
+      if (Math.random() < 0.6) { n1 = rand(11, 99); n2 = rand(2, 9); }
+      else { n1 = rand(11, 25); n2 = rand(11, 19); }
+    }
+    const ans = n1 * n2;
+    let tip;
+    if (n2 < 10) {
+      const tens = Math.floor(n1 / 10) * 10;
+      const ones = n1 - tens;
+      tip = `Split ${n1} = ${tens} + ${ones}. ${tens} × ${n2} = ${tens * n2}, ${ones} × ${n2} = ${ones * n2}. Add: ${ans}.`;
+    } else {
+      tip = `${n1} × ${n2}: do ${n1} × ${Math.floor(n2/10)*10} = ${n1 * Math.floor(n2/10)*10}, then ${n1} × ${n2 - Math.floor(n2/10)*10} = ${n1 * (n2 - Math.floor(n2/10)*10)}. Add: ${ans}.`;
+    }
+    return { text: `${n1} × ${n2} = ?`, answer: ans, tip, topic: 'multiplication' };
+  }
+
+  function qDivision(grade) {
+    // Always clean division (no decimals). Occasional remainder question at higher grades.
+    if (grade >= 6 && Math.random() < 0.25) {
+      // Remainder question
+      const divisor = rand(3, 12);
+      const quotient = rand(2, 20);
+      const remainder = rand(1, divisor - 1);
+      const dividend = divisor * quotient + remainder;
+      const tip = `${dividend} ÷ ${divisor}: largest multiple of ${divisor} not over ${dividend} is ${divisor * quotient} (= ${divisor} × ${quotient}). Remainder: ${dividend} − ${divisor * quotient} = ${remainder}.`;
+      return { text: `Remainder when ${dividend} ÷ ${divisor} = ?`, answer: remainder, tip, topic: 'division-remainder' };
+    }
+    let divisor, quotient;
+    if (grade <= 4) { divisor = rand(2, 9); quotient = rand(2, 10); }
+    else if (grade === 5) { divisor = rand(2, 12); quotient = rand(2, 15); }
+    else { divisor = rand(3, 12); quotient = rand(5, 25); }
+    const dividend = divisor * quotient;
+    const tip = `Think: ${divisor} × ? = ${dividend}. Answer: ${quotient}.`;
+    return { text: `${dividend} ÷ ${divisor} = ?`, answer: quotient, tip, topic: 'division' };
+  }
+
+  function qFractions(grade) {
+    const denominators = grade <= 4 ? [2, 3, 4, 5, 10] : [2, 3, 4, 5, 6, 8, 10, 12];
+    const d = pick(denominators);
+    const r = Math.random();
+    if (r < 0.5) {
+      // n/d of X (X divisible by d for clean answer)
+      const multiple = rand(2, grade <= 4 ? 8 : 12);
+      const x = d * multiple;
+      const n = rand(1, d - 1);
+      const ans = (x * n) / d;
+      const tip = n === 1
+        ? `1/${d} of ${x} just means ${x} ÷ ${d} = ${ans}.`
+        : `${x} ÷ ${d} = ${x/d}. So 1/${d} of ${x} is ${x/d}, and ${n}/${d} is ${n} × ${x/d} = ${ans}.`;
+      return {
+        text: `${n}/${d} of ${x} = ?`,
+        html: `${frac(n, d)} of ${x} = ?`,
+        answer: ans, tip, topic: 'fractions-of'
+      };
+    } else {
+      // Equivalent fraction: n1/d1 = ?/d2  (find numerator)
+      const n1 = rand(1, d - 1);
+      const k = rand(2, 5);
+      const d2 = d * k;
+      const ans = n1 * k;
+      const tip = `Denominator went from ${d} to ${d2} (× ${k}). So numerator: ${n1} × ${k} = ${ans}.`;
+      return {
+        text: `${n1}/${d} = ?/${d2}`,
+        html: `${frac(n1, d)} = ${frac('?', d2)}`,
+        answer: ans, tip, topic: 'fractions-equiv'
+      };
+    }
+  }
+
+  function qComplement(grade) {
+    let target;
+    if (grade <= 3) target = pick([10, 100]);
+    else if (grade === 4) target = pick([100, 100, 1000]);
+    else target = pick([100, 1000, 1000]);
+    const known = rand(target === 10 ? 1 : 11, target - 1);
+    const ans = target - known;
+    const nextRound = Math.ceil(known / 10) * 10;
+    let tip;
+    if (target === 10) {
+      tip = `Number bond to 10: ${known} + ${ans} = 10.`;
+    } else {
+      tip = `Step up: ${known} → ${nextRound} needs ${nextRound - known}. ${nextRound} → ${target} needs ${target - nextRound}. Total: ${ans}.`;
+    }
+    return { text: `? + ${known} = ${target}`, answer: ans, tip, topic: 'complement' };
+  }
+
+  function qHalvesDoubles(grade) {
+    const isDouble = Math.random() < 0.5;
+    let n;
+    if (grade <= 3) n = rand(20, 99);
+    else if (grade === 4) n = rand(50, 250);
+    else n = rand(100, 800);
+    if (!isDouble) n = n * 2; // ensure halving gives integer
+    const ans = isDouble ? n * 2 : n / 2;
+    const word = isDouble ? 'Double' : 'Half of';
+
+    let tip;
+    if (isDouble) {
+      if (n < 100) {
+        tip = `Just double it: 2 × ${n} = ${ans}.`;
+      } else {
+        const tens = Math.floor(n / 10) * 10;
+        const ones = n - tens;
+        tip = ones === 0
+          ? `${n} is round. Double the tens: 2 × ${tens} = ${ans}.`
+          : `Split into tens + ones: 2 × ${tens} = ${tens * 2}, 2 × ${ones} = ${ones * 2}. Total: ${ans}.`;
+      }
+    } else {
+      if (n < 100) {
+        tip = `Just halve it: ${n} ÷ 2 = ${ans}.`;
+      } else if (n % 100 === 0) {
+        tip = `${n} is round. Halve the hundreds: ${n} ÷ 2 = ${ans}.`;
+      } else {
+        // Split into nearest lower hundred + remainder
+        const hundreds = Math.floor(n / 100) * 100;
+        const remainder = n - hundreds;
+        tip = `Halve in chunks. ${n} = ${hundreds} + ${remainder}. Half: ${hundreds / 2} + ${remainder / 2} = ${ans}.`;
+      }
+    }
+    return { text: `${word} ${n} = ?`, answer: ans, tip, topic: 'halves-doubles' };
+  }
+
+  function qSquare(grade) {
+    let n;
+    if (grade <= 4) n = rand(2, 12);
+    else if (grade === 5) n = rand(10, 20);
+    else n = rand(11, 25);
+    const ans = n * n;
+    let tip;
+    if (n <= 12) {
+      tip = `Times tables: ${n} × ${n} = ${ans}. Worth memorising squares 1²–12².`;
+    } else if (n === 15) {
+      tip = `Numbers ending in 5: tens digit × (tens digit + 1), then put "25" on the end. Here: 1 × 2 = 2, then 25 → 225.`;
+    } else if (n === 25) {
+      tip = `Numbers ending in 5: 2 × 3 = 6, then 25 → 625. (Worth memorising — comes up a lot.)`;
+    } else if (n === 20) {
+      tip = `20 × 20 = 400. A clean anchor for nearby squares.`;
+    } else if (n < 15) {
+      // 13, 14: split as 10 + ones
+      const ones = n - 10;
+      tip = `${n} × ${n} = ${n} × 10 + ${n} × ${ones} = ${n * 10} + ${n * ones} = ${ans}.`;
+    } else if (n < 20) {
+      // 16, 17, 18, 19: round up to 20 and subtract back
+      const adj = 20 - n;
+      tip = `Round ${n} up to 20: ${n} × 20 − ${n} × ${adj} = ${n * 20} − ${n * adj} = ${ans}.`;
+    } else {
+      // 21-24: anchor on 20
+      const adj = n - 20;
+      tip = `Use 20 as anchor: ${n} × 20 + ${n} × ${adj} = ${n * 20} + ${n * adj} = ${ans}.`;
+    }
+    return { text: `${n}² = ?`, answer: ans, tip, topic: 'square' };
+  }
+
+  function qMental25(grade) {
+    // 25 × N where N is a multiple of 4 (or close), gives clean result
+    const N = pick([8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48]);
+    const swap = Math.random() < 0.5;
+    const ans = 25 * N;
+    const groupsOf4 = N / 4;
+    const tip = `Trick: 25 × 4 = 100. So 25 × ${N} = 100 × (${N} ÷ 4) = 100 × ${groupsOf4} = ${ans}.`;
+    return {
+      text: swap ? `${N} × 25 = ?` : `25 × ${N} = ?`,
+      answer: ans, tip, topic: 'mental-25'
+    };
+  }
+
+  function qMental99(grade) {
+    // 99 × N or 101 × N
+    const useNinetyNine = Math.random() < 0.6;
+    const N = rand(11, 25);
+    if (useNinetyNine) {
+      const ans = 99 * N;
+      const tip = `99 = 100 − 1. So 99 × ${N} = 100 × ${N} − ${N} = ${100 * N} − ${N} = ${ans}.`;
+      return { text: `99 × ${N} = ?`, answer: ans, tip, topic: 'mental-99' };
+    } else {
+      const ans = 101 * N;
+      const tip = `101 = 100 + 1. So 101 × ${N} = 100 × ${N} + ${N} = ${100 * N} + ${N} = ${ans}.`;
+      return { text: `101 × ${N} = ?`, answer: ans, tip, topic: 'mental-101' };
+    }
+  }
+
+  function qPercentage(grade) {
+    let pct, base;
+    if (grade === 5) {
+      pct = pick([10, 25, 50, 75]);
+      base = pick([20, 40, 60, 80, 100, 120, 200, 400]);
+    } else {
+      pct = pick([5, 10, 15, 20, 25, 30, 50, 75]);
+      base = pick([20, 40, 60, 80, 100, 120, 160, 200, 240, 300, 400]);
+    }
+    const ans = (pct / 100) * base;
+    let tip;
+    if (pct === 50) tip = `50% = half. Half of ${base} = ${ans}.`;
+    else if (pct === 25) tip = `25% = quarter. ${base} ÷ 4 = ${ans}.`;
+    else if (pct === 75) tip = `75% = three quarters. ${base} ÷ 4 = ${base/4}. ${base/4} × 3 = ${ans}.`;
+    else if (pct === 10) tip = `10% means divide by 10. ${base} ÷ 10 = ${ans}.`;
+    else if (pct === 5) tip = `5% = half of 10%. 10% of ${base} = ${base/10}. Half: ${ans}.`;
+    else if (pct === 20) tip = `20% = double 10%. 10% of ${base} = ${base/10}. Double: ${ans}.`;
+    else if (pct === 15) {
+      const ten = base / 10, five = ten / 2;
+      tip = `15% = 10% + 5%. 10% of ${base} = ${ten}. 5% is half of that: ${five}. Add: ${ten} + ${five} = ${ans}.`;
+    }
+    else if (pct === 30) tip = `30% = 3 × 10%. 10% of ${base} = ${base/10}. × 3 = ${ans}.`;
+    else tip = `Convert: ${pct}% × ${base} = ${ans}.`;
+    // Round if not integer (shouldn't happen with our picks)
+    const finalAns = Number.isInteger(ans) ? ans : Math.round(ans * 100) / 100;
+    return { text: `${pct}% of ${base} = ?`, answer: finalAns, tip, topic: 'percentage' };
+  }
+
+  function qPattern(grade) {
+    const patterns = [
+      // Arithmetic: random start and step
+      () => {
+        const start = rand(2, 20), step = rand(2, 9);
+        const seq = [start, start + step, start + 2*step, start + 3*step];
+        return {
+          seq, ans: start + 4*step,
+          tip: `Adds ${step} each time. ${seq[3]} + ${step} = ${start + 4*step}.`
+        };
+      },
+      // n(n+1): pick a random starting n
+      () => {
+        const s = rand(1, 6);
+        const term = (n) => n * (n + 1);
+        const seq = [term(s), term(s+1), term(s+2), term(s+3)];
+        const d1 = seq[1]-seq[0], d2 = seq[2]-seq[1], d3 = seq[3]-seq[2];
+        const nextDiff = d3 + 2;
+        return {
+          seq, ans: term(s+4),
+          tip: `Differences: ${d1}, ${d2}, ${d3} (each one bigger by 2). Next difference: ${nextDiff}. So next term: ${seq[3]} + ${nextDiff} = ${seq[3] + nextDiff}. (Each term is also two consecutive numbers multiplied: ${s}×${s+1}, ${s+1}×${s+2}, ${s+2}×${s+3}, …)`
+        };
+      },
+      // Squares: pick a random starting n
+      () => {
+        const s = rand(1, 6);
+        const seq = [s*s, (s+1)*(s+1), (s+2)*(s+2), (s+3)*(s+3)];
+        return {
+          seq, ans: (s+4)*(s+4),
+          tip: `These are squares: ${s}², ${s+1}², ${s+2}², ${s+3}². Next: ${s+4}² = ${s+4} × ${s+4} = ${(s+4)*(s+4)}.`
+        };
+      },
+      // Doubling: random start
+      () => {
+        const start = rand(2, 5);
+        const seq = [start, start*2, start*4, start*8];
+        return {
+          seq, ans: start * 16,
+          tip: `Each term doubles. ${start*8} × 2 = ${start*16}.`
+        };
+      },
+      // Triangular numbers: pick a random starting n
+      () => {
+        const s = rand(1, 6);
+        const tri = (n) => n * (n + 1) / 2;
+        const seq = [tri(s), tri(s+1), tri(s+2), tri(s+3)];
+        const d1 = seq[1]-seq[0], d2 = seq[2]-seq[1], d3 = seq[3]-seq[2];
+        const nextDiff = d3 + 1;
+        return {
+          seq, ans: tri(s+4),
+          tip: `Differences: ${d1}, ${d2}, ${d3} (each one bigger by 1). Next difference: ${nextDiff}. So next term: ${seq[3]} + ${nextDiff} = ${seq[3] + nextDiff}. (These are triangular numbers — sums of 1+2+3+…)`
+        };
+      },
+    ];
+    const choice = pick(patterns)();
+    return {
+      text: `${choice.seq.join(', ')}, ?`,
+      answer: choice.ans,
+      tip: choice.tip,
+      topic: 'pattern'
+    };
+  }
+
+  function qFractionCompare(grade) {
+    // Pick two fractions with different denominators where one is clearly bigger
+    const denoms = [2, 3, 4, 5, 6, 8, 10, 12];
+    let a_num, a_den, b_num, b_den, a_val, b_val;
+    let attempts = 0;
+    do {
+      a_den = pick(denoms); b_den = pick(denoms);
+      a_num = rand(1, a_den - 1); b_num = rand(1, b_den - 1);
+      a_val = a_num / a_den; b_val = b_num / b_den;
+      attempts++;
+    } while ((a_den === b_den || Math.abs(a_val - b_val) < 0.05) && attempts < 8);
+    const aBigger = a_val > b_val;
+    const ans = aBigger ? 1 : 2;
+    const cross1 = a_num * b_den;
+    const cross2 = b_num * a_den;
+    const tip = `Cross-multiply: ${a_num} × ${b_den} = ${cross1}, ${b_num} × ${a_den} = ${cross2}. ${cross1 > cross2 ? cross1 + ' > ' + cross2 : cross2 + ' > ' + cross1}, so ${aBigger ? a_num + '/' + a_den : b_num + '/' + b_den} is bigger.`;
+    const html = `
+      <div class="choice-prompt">Which is bigger?</div>
+      <div class="choice-row">
+        <div class="choice-card"><span class="opt-tag">1</span>${frac(a_num, a_den)}</div>
+        <div class="choice-card"><span class="opt-tag">2</span>${frac(b_num, b_den)}</div>
+      </div>
+      <div class="choice-hint">Type 1 or 2</div>
+    `;
+    return {
+      text: `Bigger? (1) ${a_num}/${a_den}  (2) ${b_num}/${b_den}  → type 1 or 2`,
+      html,
+      answer: ans,
+      tip,
+      topic: 'fraction-compare',
+      validRange: [1, 2]
+    };
+  }
+
+  function qBodmas(grade) {
+    // Avoid division (to keep integer answers cleanly).
+    const ops = ['+', '-', '×'];
+    const a = rand(2, 12), b = rand(2, 12), c = rand(2, 12);
+    let expr, ans;
+    const layout = pick([1, 2, 3]);
+    if (layout === 1) {
+      // a + b × c
+      expr = `${a} + ${b} × ${c}`;
+      ans = a + b * c;
+    } else if (layout === 2) {
+      // a × b - c  (ensure non-negative for primary)
+      expr = `${a} × ${b} − ${c}`;
+      ans = a * b - c;
+    } else {
+      // (a + b) × c
+      expr = `(${a} + ${b}) × ${c}`;
+      ans = (a + b) * c;
+    }
+    let tip;
+    if (layout === 1) tip = `× before +. ${b} × ${c} = ${b*c}. Then ${a} + ${b*c} = ${ans}.`;
+    else if (layout === 2) tip = `× before −. ${a} × ${b} = ${a*b}. Then ${a*b} − ${c} = ${ans}.`;
+    else tip = `Brackets first. ${a} + ${b} = ${a+b}. Then × ${c} = ${ans}.`;
+    return { text: `${expr} = ?`, answer: ans, tip, topic: 'bodmas' };
+  }
+
+  // Topic pool by level
+  const POOL = {
+    3: ['addition', 'addition', 'subtraction', 'subtraction', 'complement', 'halvesdoubles'],
+    4: ['addition', 'subtraction', 'multiplication', 'multiplication', 'complement', 'halvesdoubles', 'square'],
+    5: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'complement', 'halvesdoubles', 'square', 'mental25', 'percentage', 'pattern', 'fractioncompare', 'bodmas'],
+    6: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'halvesdoubles', 'square', 'mental25', 'mental99', 'percentage', 'pattern', 'fractioncompare', 'bodmas', 'bodmas']
+  };
+
+  const GENERATORS = {
+    addition: qAddition,
+    subtraction: qSubtraction,
+    multiplication: qMultiplication,
+    division: qDivision,
+    fractions: qFractions,
+    complement: qComplement,
+    halvesdoubles: qHalvesDoubles,
+    square: qSquare,
+    mental25: qMental25,
+    mental99: qMental99,
+    percentage: qPercentage,
+    pattern: qPattern,
+    fractioncompare: qFractionCompare,
+    bodmas: qBodmas,
+  };
+
+  function generateQuestion() {
+    const pool = POOL[gradeLevel] || POOL[5];
+    const topic = pick(pool);
+    currentQuestion = GENERATORS[topic](gradeLevel);
+    const el = document.getElementById('question');
+    if (currentQuestion.html) {
+      el.innerHTML = currentQuestion.html;
+    } else {
+      el.textContent = currentQuestion.text;
+    }
+    el.classList.remove('fade-in');
+    void el.offsetWidth;
+    el.classList.add('fade-in');
+    questionStartTime = performance.now();
+  }
+
+  // ===== Operations list update =====
+  function updateOperationsList() {
+    const grade = parseInt(document.getElementById('grade-level').value);
+    const labels = {
+      3: '+, −, number bonds, halves & doubles',
+      4: '+, −, ×, squares, halves & doubles',
+      5: '+, −, ×, ÷, fractions, %, patterns, BODMAS, mental tricks',
+      6: 'All of Year 5–6, plus 99×, bigger squares, 2-digit ×, harder BODMAS'
+    };
+    document.getElementById('operations-list').textContent = labels[grade] || labels[5];
+  }
+
+  // ===== Game flow =====
+  function startGame() {
+    cancelWrongAnswerPause();
+    playerName = document.getElementById('player-name').value.trim() || 'Player';
+    gradeLevel = parseInt(document.getElementById('grade-level').value);
+    gameDuration = parseInt(document.getElementById('game-duration').value);
+    timeLeft = gameDuration;
+
+    score = 0;
+    correctAnswers = 0;
+    incorrectAnswers = 0;
+    totalAnswered = 0;
+    mistakes = [];
+    responseTimes = [];
+
+    updateScoreDisplay();
+    updateTimerDisplay();
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('answer').value = '';
+
+    document.getElementById('intro-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+
+    updateSoundUI();
+    generateQuestion();
+    document.getElementById('answer').focus();
+
+    clearInterval(timerInterval);
+    gameStartedAt = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    document.getElementById('timer').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+
+  function updateTimer() {
+    // Wall-clock based: survives background-tab throttling.
+    const elapsed = Math.floor((Date.now() - gameStartedAt) / 1000);
+    timeLeft = Math.max(0, gameDuration - elapsed);
+    updateTimerDisplay();
+    if (timeLeft <= 0) endGame();
+  }
+
+  // ===== Init (single DOMContentLoaded handler) =====
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sound toggle on intro screen
+    const sw = document.getElementById('sound-switch');
+    if (sw) {
+      sw.addEventListener('click', toggleSound);
+      sw.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleSound(); }
+      });
+    }
+    // Operations list updates with level
+    document.getElementById('grade-level').addEventListener('change', updateOperationsList);
+    updateOperationsList();
+    // Load saved sound preference
+    loadSoundPref();
+    // Submit on Enter (use keydown — keypress is deprecated)
+    document.getElementById('answer').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); }
+    });
+  });
+
+  function checkAnswer() {
+    // Defensive guard: ignore submissions while we're in the wrong-answer pause.
+    if (awaitingNext) return;
+
+    const inputEl = document.getElementById('answer');
+    const submitBtn = document.getElementById('submit-btn');
+    const userInput = inputEl.value.trim();
+    const userAnswer = parseFloat(userInput);
+    const feedback = document.getElementById('feedback');
+
+    if (userInput === '' || isNaN(userAnswer)) {
+      feedback.textContent = 'Type a number, then press Enter.';
+      feedback.className = 'feedback muted pulse';
+      return;
+    }
+
+    // Validity for choice questions (e.g., fraction compare)
+    if (currentQuestion.validRange) {
+      const [lo, hi] = currentQuestion.validRange;
+      if (userAnswer < lo || userAnswer > hi || !Number.isInteger(userAnswer)) {
+        feedback.textContent = `Type ${lo} or ${hi}.`;
+        feedback.className = 'feedback muted pulse';
+        return;
+      }
+    }
+
+    const elapsed = performance.now() - questionStartTime;
+    responseTimes.push(elapsed);
+
+    totalAnswered++;
+    const correctAns = currentQuestion.answer;
+    let isCorrect;
+    if (Number.isInteger(correctAns)) {
+      isCorrect = userAnswer === correctAns;
+    } else {
+      isCorrect = Math.abs(userAnswer - correctAns) < 0.01;
+    }
+
+    if (isCorrect) {
+      score += 3;
+      correctAnswers++;
+      feedback.textContent = `✓ Correct  (+3)`;
+      feedback.className = 'feedback correct pulse';
+      updateScoreDisplay();
+      inputEl.value = '';
+      // Snappy: next question immediately
+      generateQuestion();
+      inputEl.focus();
+    } else {
+      score -= 1;
+      incorrectAnswers++;
+      // Record mistake
+      mistakes.push({
+        text: currentQuestion.text,
+        html: currentQuestion.html || null,
+        userAnswer: userInput,
+        correctAnswer: correctAns,
+        tip: currentQuestion.tip,
+        topic: currentQuestion.topic,
+      });
+      let displayCorrect = correctAns;
+      if (typeof displayCorrect === 'number' && !Number.isInteger(displayCorrect)) {
+        displayCorrect = Number(displayCorrect).toFixed(2).replace(/\.?0+$/, '');
+      }
+      feedback.innerHTML = `✗ You wrote <strong>${escapeHtml(userInput)}</strong>. Answer was <strong>${displayCorrect}</strong>  (−1)`;
+      feedback.className = 'feedback incorrect pulse';
+      updateScoreDisplay();
+      inputEl.value = '';
+      // Hold briefly so the wrong answer registers — disable input AND submit, track timeout.
+      awaitingNext = true;
+      inputEl.disabled = true;
+      if (submitBtn) submitBtn.disabled = true;
+      if (wrongAnswerTimeout) clearTimeout(wrongAnswerTimeout);
+      wrongAnswerTimeout = setTimeout(() => {
+        wrongAnswerTimeout = null;
+        awaitingNext = false;
+        inputEl.disabled = false;
+        if (submitBtn) submitBtn.disabled = false;
+        // Only proceed if the game is still running (timer hasn't fired endGame).
+        const gameVisible = document.getElementById('game-screen').style.display !== 'none';
+        if (gameVisible) {
+          generateQuestion();
+          inputEl.focus();
+        }
+      }, 900);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function endGame() {
+    clearInterval(timerInterval);
+    cancelWrongAnswerPause();
+
+    const totalSecs = gameDuration;
+    const totalMin = totalSecs / 60;
+    const qpm = totalMin > 0 ? (totalAnswered / totalMin) : 0;
+    const avgMs = responseTimes.length > 0
+      ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+      : 0;
+    const accuracy = totalAnswered > 0 ? Math.round((correctAnswers / totalAnswered) * 100) : 0;
+
+    const finalScoreEl = document.getElementById('final-score');
+    finalScoreEl.textContent = score;
+    finalScoreEl.classList.toggle('negative', score < 0);
+    document.getElementById('correct-count').textContent = correctAnswers;
+    document.getElementById('incorrect-count').textContent = incorrectAnswers;
+    document.getElementById('total-count').textContent = totalAnswered;
+    document.getElementById('accuracy').textContent = accuracy + '%';
+    document.getElementById('qpm').textContent = qpm.toFixed(1);
+    document.getElementById('avg-time').textContent = fmtTime(avgMs);
+
+    // Verdict (uses accuracy + qpm, not raw score)
+    let verdict;
+    if (totalAnswered === 0) verdict = `${playerName}, give it another go!`;
+    else if (accuracy >= 90 && qpm >= 12) verdict = `${playerName}, that was lightning. ⚡`;
+    else if (accuracy >= 90) verdict = `${playerName}, ${accuracy}% accuracy — outstanding!`;
+    else if (accuracy >= 75) verdict = `Nice work, ${playerName}. Solid run.`;
+    else if (accuracy >= 50) verdict = `Good effort, ${playerName}. Review the mistakes.`;
+    else verdict = `${playerName}, slow down a touch and check the tips.`;
+    document.getElementById('verdict').textContent = verdict;
+
+    const levelLabel = ({3:'Easy', 4:'Medium', 5:'Hard', 6:'Extreme'})[gradeLevel];
+    const durLabel = (gameDuration / 60) + ' min';
+    document.getElementById('final-meta').textContent = `${levelLabel} · ${durLabel}`;
+
+    // Save to leaderboard
+    const entry = {
+      name: playerName,
+      score,
+      accuracy,
+      qpm: Number(qpm.toFixed(1)),
+      total: totalAnswered,
+      date: new Date().toISOString(),
+    };
+    lastNewLeaderboardIdx = recordScore(gradeLevel, gameDuration, entry);
+
+    // Disable review button if no mistakes
+    const reviewBtn = document.getElementById('review-btn');
+    if (mistakes.length === 0) {
+      reviewBtn.textContent = 'No mistakes 🏆';
+      reviewBtn.disabled = true;
+      reviewBtn.style.opacity = '0.5';
+      reviewBtn.style.cursor = 'default';
+    } else {
+      reviewBtn.textContent = `Review mistakes (${mistakes.length})`;
+      reviewBtn.disabled = false;
+      reviewBtn.style.opacity = '1';
+      reviewBtn.style.cursor = 'pointer';
+    }
+
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+
+    playEndSound(score);
+  }
+
+  function showMistakeReview() {
+    if (mistakes.length === 0) return;
+    leaderboardOrigin = 'result';
+    const list = document.getElementById('mistake-list');
+    list.innerHTML = '';
+    mistakes.forEach((m, i) => {
+      const card = document.createElement('div');
+      card.className = 'mistake-card';
+      let displayCorrect = m.correctAnswer;
+      if (typeof displayCorrect === 'number' && !Number.isInteger(displayCorrect)) {
+        displayCorrect = Number(displayCorrect).toFixed(2).replace(/\.?0+$/, '');
+      }
+      // For review cards, render rich HTML if available — but compact the
+      // fraction-compare layout (choice cards would be oversized in a list).
+      let qHtml;
+      if (m.topic === 'fraction-compare') {
+        // Pull numerators/denominators back out of the plain text fallback.
+        const match = m.text.match(/\((\d+)\)\s*(\d+)\/(\d+)\s*\(\d+\)\s*(\d+)\/(\d+)/);
+        if (match) {
+          const [, , an, ad, bn, bd] = match;
+          qHtml = `Bigger? (1) ${frac(an, ad)} &nbsp; (2) ${frac(bn, bd)}`;
+        } else {
+          qHtml = escapeHtml(m.text);
+        }
+      } else if (m.html) {
+        qHtml = m.html;
+      } else {
+        qHtml = escapeHtml(m.text);
+      }
+      card.innerHTML = `
+        <div class="mistake-q">${qHtml}</div>
+        <div class="mistake-line">You wrote: <span class="you">${escapeHtml(m.userAnswer)}</span></div>
+        <div class="mistake-line">Correct: <span class="correct">${escapeHtml(String(displayCorrect))}</span></div>
+        <div class="mistake-tip"><strong>💡 Speed tip:</strong> ${escapeHtml(m.tip)}</div>
+      `;
+      list.appendChild(card);
+    });
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'block';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showLeaderboardFromIntro() {
+    leaderboardOrigin = 'intro';
+    // Use the currently-selected level/duration from intro so we open a relevant board
+    gradeLevel = parseInt(document.getElementById('grade-level').value);
+    gameDuration = parseInt(document.getElementById('game-duration').value);
+    showLeaderboard();
+    document.getElementById('intro-screen').style.display = 'none';
+  }
+
+  function showLeaderboard() {
+    // Populate selectors
+    const lvlSel = document.getElementById('lb-level');
+    const durSel = document.getElementById('lb-duration');
+    if (lvlSel.options.length === 0) {
+      [[3, 'Easy'], [4, 'Medium'], [5, 'Hard'], [6, 'Extreme']].forEach(([v, l]) => {
+        const o = document.createElement('option'); o.value = v; o.textContent = l + ' (Year ' + (v === 3 ? '3–4' : v === 4 ? '4–5' : v === 5 ? '5–6' : '6–7') + ')';
+        lvlSel.appendChild(o);
+      });
+      [[60, '1 minute'], [120, '2 minutes'], [180, '3 minutes'], [300, '5 minutes'], [600, '10 minutes']].forEach(([v, l]) => {
+        const o = document.createElement('option'); o.value = v; o.textContent = l;
+        durSel.appendChild(o);
+      });
+      lvlSel.addEventListener('change', renderLeaderboard);
+      durSel.addEventListener('change', renderLeaderboard);
+    }
+    lvlSel.value = String(gradeLevel);
+    durSel.value = String(gameDuration);
+    renderLeaderboard();
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderLeaderboard() {
+    const lvl = parseInt(document.getElementById('lb-level').value);
+    const dur = parseInt(document.getElementById('lb-duration').value);
+    const list = getLeaderboard(lvl, dur);
+    const ol = document.getElementById('lb-list');
+    ol.innerHTML = '';
+    if (list.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.innerHTML = '<div class="big">📋</div>No scores yet for this level and duration.';
+      ol.appendChild(empty);
+    } else {
+      const isCurrentBoard = (lvl === gradeLevel && dur === gameDuration);
+      list.forEach((e, i) => {
+        const li = document.createElement('li');
+        if (isCurrentBoard && i === lastNewLeaderboardIdx) li.classList.add('is-new');
+        const date = e.date ? new Date(e.date).toLocaleDateString() : '';
+        li.innerHTML = `
+          <span class="lb-rank">${i + 1}</span>
+          <div>
+            <div class="lb-name">${escapeHtml(e.name)}</div>
+            <div class="lb-meta">${e.accuracy}% · ${e.qpm}/min · ${date}</div>
+          </div>
+          <span class="lb-score">${e.score}</span>
+        `;
+        ol.appendChild(li);
+      });
+    }
+    document.getElementById('lb-meta').textContent = `Top ${Math.min(10, list.length)} scores · stored on this device only`;
+  }
+
+  function backToResult() {
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+    if (leaderboardOrigin === 'intro') {
+      document.getElementById('intro-screen').style.display = 'block';
+      leaderboardOrigin = 'result';
+    } else {
+      document.getElementById('result-screen').style.display = 'block';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetGame() {
+    cancelWrongAnswerPause();
+    lastNewLeaderboardIdx = -1;
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'block';
+    document.getElementById('player-name').focus();
+  }
+  </script>
+</body>
+</html>
