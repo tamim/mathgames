@@ -560,6 +560,7 @@
   let wrongAnswerTimeout = null;     // tracks the 900ms pause timer
   let awaitingNext = false;          // true while we're holding for the next question
   let gameStartedAt = 0;             // wall-clock ms when current game started
+  let seenQuestions = new Set();     // question texts already used in this game
 
   // ===== Persistence =====
   const LS_SOUND = 'tlms_sound';
@@ -1046,6 +1047,55 @@
     };
   }
 
+  // The six "core" fraction-decimal-percentage equivalences students should know cold.
+  function qFracDecPct(grade) {
+    const equivalences = [
+      { num: 1, den: 2, dec: 0.5,   pct: 50 },
+      { num: 1, den: 4, dec: 0.25,  pct: 25 },
+      { num: 3, den: 4, dec: 0.75,  pct: 75 },
+      { num: 1, den: 5, dec: 0.2,   pct: 20 },
+      { num: 1, den: 10, dec: 0.1,  pct: 10 },
+      { num: 1, den: 8, dec: 0.125, pct: 12.5 },
+    ];
+    const e = pick(equivalences);
+    const direction = pick(['fracToDec', 'fracToPct', 'decToPct', 'pctToDec']);
+    const fracStr = `${e.num}/${e.den}`;
+    const fracHtml = frac(e.num, e.den);
+    const memo = `Worth memorising: 1/2=0.5=50%, 1/4=0.25=25%, 3/4=0.75=75%, 1/5=0.2=20%, 1/10=0.1=10%, 1/8=0.125=12.5%.`;
+
+    if (direction === 'fracToDec') {
+      return {
+        text: `${fracStr} = ? (as decimal)`,
+        html: `${fracHtml} = ? <span style="font-size:0.55em;color:var(--text-dim);">(as decimal)</span>`,
+        answer: e.dec,
+        tip: `${fracStr} = ${e.num} ÷ ${e.den} = ${e.dec}. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    } else if (direction === 'fracToPct') {
+      return {
+        text: `${fracStr} = ?%`,
+        html: `${fracHtml} = ?%`,
+        answer: e.pct,
+        tip: `${fracStr} = ${e.pct}%. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    } else if (direction === 'decToPct') {
+      return {
+        text: `${e.dec} = ?%`,
+        answer: e.pct,
+        tip: `Multiply by 100 to convert decimal → %: ${e.dec} × 100 = ${e.pct}%. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    } else { // pctToDec
+      return {
+        text: `${e.pct}% = ? (as decimal)`,
+        answer: e.dec,
+        tip: `Divide by 100 to convert % → decimal: ${e.pct} ÷ 100 = ${e.dec}. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    }
+  }
+
   function qBodmas(grade) {
     // Avoid division (to keep integer answers cleanly).
     const ops = ['+', '-', '×'];
@@ -1076,8 +1126,8 @@
   const POOL = {
     3: ['addition', 'addition', 'subtraction', 'subtraction', 'complement', 'halvesdoubles'],
     4: ['addition', 'subtraction', 'multiplication', 'multiplication', 'complement', 'halvesdoubles', 'square'],
-    5: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'complement', 'halvesdoubles', 'square', 'mental25', 'percentage', 'pattern', 'fractioncompare', 'bodmas'],
-    6: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'halvesdoubles', 'square', 'mental25', 'mental99', 'percentage', 'pattern', 'fractioncompare', 'bodmas', 'bodmas']
+    5: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'complement', 'halvesdoubles', 'square', 'mental25', 'percentage', 'pattern', 'fractioncompare', 'bodmas', 'fracdecpct', 'fracdecpct'],
+    6: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'halvesdoubles', 'square', 'mental25', 'mental99', 'percentage', 'pattern', 'fractioncompare', 'bodmas', 'bodmas', 'fracdecpct', 'fracdecpct']
   };
 
   const GENERATORS = {
@@ -1095,12 +1145,22 @@
     pattern: qPattern,
     fractioncompare: qFractionCompare,
     bodmas: qBodmas,
+    fracdecpct: qFracDecPct,
   };
 
   function generateQuestion() {
     const pool = POOL[gradeLevel] || POOL[5];
-    const topic = pick(pool);
-    currentQuestion = GENERATORS[topic](gradeLevel);
+    let q;
+    let tries = 0;
+    // Try up to 20 times to avoid repeating a question already seen in this game.
+    // If we somehow can't find a fresh one (e.g., very long game with a small pool), give up.
+    do {
+      const topic = pick(pool);
+      q = GENERATORS[topic](gradeLevel);
+      tries++;
+    } while (seenQuestions.has(q.text) && tries < 20);
+    seenQuestions.add(q.text);
+    currentQuestion = q;
     const el = document.getElementById('question');
     if (currentQuestion.html) {
       el.innerHTML = currentQuestion.html;
@@ -1119,7 +1179,7 @@
     const labels = {
       3: '+, −, number bonds, halves & doubles',
       4: '+, −, ×, squares, halves & doubles',
-      5: '+, −, ×, ÷, fractions, %, patterns, BODMAS, mental tricks',
+      5: '+, −, ×, ÷, fractions, %, fraction↔decimal↔% conversions, patterns, BODMAS, mental tricks',
       6: 'All of Year 5–6, plus 99×, bigger squares, 2-digit ×, harder BODMAS'
     };
     document.getElementById('operations-list').textContent = labels[grade] || labels[5];
@@ -1139,6 +1199,7 @@
     totalAnswered = 0;
     mistakes = [];
     responseTimes = [];
+    seenQuestions = new Set();
 
     updateScoreDisplay();
     updateTimerDisplay();
@@ -1231,7 +1292,8 @@
     if (Number.isInteger(correctAns)) {
       isCorrect = userAnswer === correctAns;
     } else {
-      isCorrect = Math.abs(userAnswer - correctAns) < 0.01;
+      // Tight tolerance for decimal answers — 0.124 should NOT pass for 0.125.
+      isCorrect = Math.abs(userAnswer - correctAns) < 0.001;
     }
 
     if (isCorrect) {
