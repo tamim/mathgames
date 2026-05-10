@@ -1,1203 +1,1576 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Factor Force 🚀</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root {
-  --yellow: #FFD93D;
-  --orange: #FF6B35;
-  --pink: #FF4D8D;
-  --blue: #4ECDC4;
-  --purple: #A855F7;
-  --green: #22C55E;
-  --red: #EF4444;
-  --dark: #0d1117;
-  --card: #161b22;
-  --card2: #21262d;
-  --border: #30363d;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Nunito', sans-serif;
-  background: var(--dark);
-  color: #e6edf3;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse at 20% 0%, rgba(168,85,247,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(78,205,196,0.07) 0%, transparent 60%);
-  pointer-events: none; z-index: 0;
-}
+  <meta charset="UTF-8">
+  <title>Math Sprint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #050b1f;
+      --bg-2: #0a2350;
+      --panel: rgba(8, 16, 36, 0.85);
+      --panel-border: rgba(0, 255, 204, 0.15);
+      --accent: #00ffcc;
+      --accent-soft: rgba(0, 255, 204, 0.12);
+      --warn: #ff5577;
+      --warn-soft: rgba(255, 85, 119, 0.12);
+      --good: #2ecc71;
+      --bad: #e74c3c;
+      --text: #f2f5fa;
+      --text-dim: #9aa6bf;
+      --tip-bg: rgba(241, 196, 15, 0.10);
+      --tip-border: rgba(241, 196, 15, 0.4);
+      --tip-text: #ffe18a;
+    }
 
-/* ── SCREENS ── */
-.screen { display: none; position: relative; z-index: 1; }
-.screen.active { display: block; }
-.container { max-width: 700px; margin: 0 auto; padding: 20px 16px; }
+    * { box-sizing: border-box; }
 
-/* ── WELCOME SCREEN ── */
-.logo {
-  font-family: 'Fredoka One', cursive;
-  font-size: clamp(2.8rem, 8vw, 4.5rem);
-  text-align: center;
-  background: linear-gradient(135deg, var(--yellow), var(--orange), var(--pink));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; line-height: 1.1; margin-bottom: 6px;
-}
-.tagline { text-align: center; color: #8b949e; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 36px; }
+    html, body { height: 100%; }
 
-.name-input-wrap { margin-bottom: 20px; }
-.name-input-wrap label { display: block; font-weight: 700; color: #8b949e; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.name-input-wrap input {
-  width: 100%; padding: 14px 18px;
-  background: var(--card2); border: 2px solid var(--border);
-  border-radius: 14px; color: #e6edf3;
-  font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700;
-  outline: none; transition: border-color 0.2s;
-}
-.name-input-wrap input:focus { border-color: var(--blue); }
-.name-input-wrap input::placeholder { color: #484f58; }
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-feature-settings: "tnum"; /* tabular numerals */
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(0, 255, 204, 0.08), transparent 60%),
+        radial-gradient(900px 500px at 90% 100%, rgba(0, 78, 146, 0.45), transparent 60%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      color: var(--text);
+      margin: 0;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100%;
+    }
 
-.diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 28px; }
-.diff-card {
-  background: var(--card); border: 2px solid var(--border);
-  border-radius: 16px; padding: 16px 12px; text-align: center;
-  cursor: pointer; transition: all 0.2s;
-}
-.diff-card:hover { border-color: var(--blue); transform: translateY(-2px); }
-.diff-card.selected { border-color: var(--yellow); background: rgba(255,217,61,0.06); }
-.diff-card .diff-icon { font-size: 2rem; margin-bottom: 6px; }
-.diff-card .diff-name { font-family: 'Fredoka One', cursive; font-size: 1.1rem; }
-.diff-card .diff-desc { font-size: 0.72rem; color: #8b949e; margin-top: 4px; line-height: 1.4; }
-.diff-card.selected .diff-name { color: var(--yellow); }
+    .brand {
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
 
-.start-btn {
-  display: block; width: 100%; padding: 16px;
-  background: linear-gradient(135deg, var(--orange), var(--pink));
-  border: none; border-radius: 16px;
-  font-family: 'Fredoka One', cursive; font-size: 1.4rem;
-  color: white; cursor: pointer; transition: all 0.2s;
-}
-.start-btn:hover { transform: scale(1.02); opacity: 0.95; }
+    .panel {
+      background-color: var(--panel);
+      backdrop-filter: blur(8px);
+      padding: 28px 24px;
+      border-radius: 16px;
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      width: 100%;
+      max-width: 640px;
+      margin: 12px 0;
+      animation: rise 0.45s ease-out;
+    }
 
-/* ── HUD ── */
-.hud {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 16px; flex-wrap: wrap;
-}
-.hud-name {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.1rem; color: var(--blue); flex: 1;
-}
-.lives { display: flex; gap: 4px; align-items: center; }
-.heart { font-size: 1.4rem; transition: all 0.3s; }
-.heart.lost { filter: grayscale(1); opacity: 0.3; transform: scale(0.8); }
-.score-badge {
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: 50px; padding: 6px 14px;
-  font-family: 'Fredoka One', cursive; font-size: 1rem;
-}
-.score-badge span { color: var(--yellow); }
-.streak-badge {
-  background: rgba(255,107,53,0.15); border: 1px solid rgba(255,107,53,0.4);
-  border-radius: 50px; padding: 6px 12px;
-  font-family: 'Fredoka One', cursive; font-size: 0.85rem; color: var(--orange);
-  display: none; align-items: center; gap: 4px;
-}
-.streak-badge.show { display: flex; animation: popIn 0.3s; }
-.diff-badge {
-  border-radius: 50px; padding: 4px 12px;
-  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-}
-.diff-badge.cadet { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
-.diff-badge.explorer { background: rgba(78,205,196,0.15); color: var(--blue); border: 1px solid rgba(78,205,196,0.3); }
-.diff-badge.champion { background: rgba(168,85,247,0.15); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+    @keyframes rise {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
 
-/* ── TIMER ── */
-.timer-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.timer-bar-bg {
-  flex: 1; height: 8px; background: var(--card2);
-  border-radius: 50px; overflow: hidden;
-}
-.timer-bar {
-  height: 100%; border-radius: 50px;
-  background: linear-gradient(90deg, var(--green), var(--blue));
-  transition: width 0.1s linear, background 0.5s;
-}
-.timer-bar.danger { background: linear-gradient(90deg, var(--red), var(--orange)); }
-.timer-num {
-  font-family: 'Fredoka One', cursive; font-size: 1rem;
-  color: #8b949e; min-width: 28px; text-align: right;
-}
-.timer-num.danger { color: var(--red); }
+    h1, h2, h3 { color: var(--accent); margin: 0 0 16px; font-weight: 700; }
+    h1 { font-size: 28px; letter-spacing: -0.01em; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 16px; color: var(--text); }
 
-/* ── GAME CARD ── */
-.game-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 24px; padding: 24px 20px; margin-bottom: 14px;
-  min-height: 260px;
-}
-.q-type-pill {
-  display: inline-block; border-radius: 50px; padding: 4px 14px;
-  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 14px;
-}
-.qt-prime { background: rgba(255,77,141,0.15); color: var(--pink); border: 1px solid rgba(255,77,141,0.3); }
-.qt-factors { background: rgba(78,205,196,0.15); color: var(--blue); border: 1px solid rgba(78,205,196,0.3); }
-.qt-isfactor { background: rgba(168,85,247,0.15); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
-.qt-count { background: rgba(255,107,53,0.15); color: var(--orange); border: 1px solid rgba(255,107,53,0.3); }
-.qt-pair { background: rgba(255,217,61,0.15); color: var(--yellow); border: 1px solid rgba(255,217,61,0.3); }
+    label { font-weight: 500; color: var(--text-dim); font-size: 14px; }
 
-.q-text { font-size: 1.05rem; color: #8b949e; margin-bottom: 10px; line-height: 1.5; }
-.q-text strong { color: #e6edf3; }
-.q-number {
-  font-family: 'Fredoka One', cursive;
-  font-size: clamp(3.5rem, 12vw, 6rem);
-  line-height: 1; text-align: center;
-  background: linear-gradient(135deg, var(--yellow), var(--orange));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; margin-bottom: 4px;
-}
-.q-sub { text-align: center; font-size: 0.9rem; color: #8b949e; margin-bottom: 20px; }
+    .field { margin-bottom: 16px; text-align: left; }
+    .field label { display: block; margin-bottom: 6px; }
 
-/* Yes/No big buttons */
-.yn-wrap { display: flex; gap: 14px; justify-content: center; }
-.yn-btn {
-  flex: 1; max-width: 200px; padding: 18px 10px;
-  border-radius: 16px; font-family: 'Fredoka One', cursive;
-  font-size: 1.5rem; cursor: pointer; border: 3px solid;
-  transition: all 0.2s;
-}
-.yn-btn.yes { background: rgba(34,197,94,0.1); border-color: var(--green); color: var(--green); }
-.yn-btn.no { background: rgba(239,68,68,0.1); border-color: var(--red); color: var(--red); }
-.yn-btn:hover:not(:disabled) { transform: scale(1.04); }
-.yn-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 17px;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 8px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 255, 204, 0.18);
+    }
 
-/* Number grid */
-.num-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-  gap: 7px; margin-bottom: 14px;
-}
-.ng-btn {
-  aspect-ratio: 1; border-radius: 10px;
-  border: 2px solid var(--border); background: var(--card2);
-  color: #e6edf3; font-family: 'Fredoka One', cursive; font-size: 1.1rem;
-  cursor: pointer; transition: all 0.12s;
-  display: flex; align-items: center; justify-content: center;
-}
-.ng-btn:hover:not(.disabled) { border-color: var(--blue); background: rgba(78,205,196,0.1); transform: scale(1.06); }
-.ng-btn.selected { border-color: var(--yellow); background: rgba(255,217,61,0.12); color: var(--yellow); }
-.ng-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.15); color: var(--green); animation: pop 0.3s; }
-.ng-btn.missed { border-color: var(--orange); background: rgba(255,107,53,0.15); color: var(--orange); }
-.ng-btn.wrong-sel { border-color: var(--red); background: rgba(239,68,68,0.15); color: var(--red); animation: shake 0.3s; }
-.ng-btn.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    select option { background: #0a1530; color: var(--text); }
 
-/* Multiple choice */
-.mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.mc-btn {
-  padding: 16px; border-radius: 14px;
-  border: 2px solid var(--border); background: var(--card2);
-  color: #e6edf3; font-family: 'Fredoka One', cursive; font-size: 1.3rem;
-  cursor: pointer; transition: all 0.15s; text-align: center;
-}
-.mc-btn:hover:not(:disabled) { border-color: var(--purple); background: rgba(168,85,247,0.1); transform: scale(1.02); }
-.mc-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.15); color: var(--green); }
-.mc-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.15); color: var(--red); }
-.mc-btn:disabled { cursor: not-allowed; }
+    .answer-input {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+    }
 
-/* Factor pair fill-in */
-.pair-wrap { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
-.pair-num {
-  font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: var(--blue);
-}
-.pair-box {
-  font-family: 'Fredoka One', cursive; font-size: 2rem;
-  width: 80px; height: 64px;
-  background: var(--card2); border: 3px solid var(--border);
-  border-radius: 14px; color: var(--yellow);
-  text-align: center; outline: none;
-  transition: border-color 0.2s;
-}
-.pair-box:focus { border-color: var(--yellow); }
-.pair-box.correct { border-color: var(--green); color: var(--green); }
-.pair-box.wrong { border-color: var(--red); color: var(--red); }
-.pair-eq { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: #484f58; }
-.pair-submit {
-  display: block; width: 100%; margin-top: 14px;
-  padding: 13px; background: linear-gradient(135deg, var(--blue), var(--purple));
-  border: none; border-radius: 14px; color: white;
-  font-family: 'Fredoka One', cursive; font-size: 1.1rem;
-  cursor: pointer; transition: all 0.2s;
-}
-.pair-submit:hover { opacity: 0.9; }
-.pair-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    button {
+      width: 100%;
+      padding: 13px 16px;
+      background-color: var(--accent);
+      color: #002b22;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+      transition: transform 0.08s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    button:hover { background-color: #5cffd9; box-shadow: 0 0 16px rgba(0, 255, 204, 0.4); }
+    button:active { transform: translateY(1px); }
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(0, 255, 204, 0.35);
+    }
+    button.secondary:hover { background: var(--accent-soft); box-shadow: none; }
+    button.ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    button.ghost:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); box-shadow: none; }
 
-.submit-factors {
-  display: block; width: 100%;
-  padding: 13px; background: linear-gradient(135deg, var(--blue), var(--purple));
-  border: none; border-radius: 14px; color: white;
-  font-family: 'Fredoka One', cursive; font-size: 1.1rem;
-  cursor: pointer; transition: all 0.2s;
-}
-.submit-factors:hover { opacity: 0.9; }
-.submit-factors:disabled { opacity: 0.4; cursor: not-allowed; }
+    .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .button-row.three { grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 480px) { .button-row, .button-row.three { grid-template-columns: 1fr; } }
 
-/* ── EXPLAINER ── */
-.explainer {
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: 18px; padding: 18px 20px; margin-bottom: 14px;
-  display: none; animation: fadeUp 0.35s;
-}
-.explainer.show { display: block; }
-.explainer-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.explainer-icon { font-size: 1.4rem; }
-.explainer-title { font-family: 'Fredoka One', cursive; font-size: 1rem; }
-.explainer-title.correct-title { color: var(--green); }
-.explainer-title.wrong-title { color: var(--red); }
-.explainer-body { font-size: 0.88rem; color: #8b949e; line-height: 1.7; }
-.explainer-body strong { color: #e6edf3; }
-.explainer-body .highlight { color: var(--yellow); font-weight: 800; }
-.factor-tree {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  margin: 8px 0; align-items: center;
-}
-.ft-num {
-  background: rgba(255,217,61,0.12); border: 1px solid rgba(255,217,61,0.3);
-  border-radius: 8px; padding: 3px 10px;
-  font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--yellow);
-}
-.ft-prime {
-  background: rgba(255,77,141,0.12); border: 1px solid rgba(255,77,141,0.3);
-  border-radius: 8px; padding: 3px 10px;
-  font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--pink);
-}
-.ft-op { color: #484f58; font-size: 0.9rem; margin: 0 2px; }
-.pairs-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
-.pair-chip {
-  background: rgba(78,205,196,0.1); border: 1px solid rgba(78,205,196,0.25);
-  border-radius: 8px; padding: 4px 12px;
-  font-family: 'Fredoka One', cursive; font-size: 0.9rem; color: var(--blue);
-}
+    .rules { font-size: 14px; color: var(--text-dim); padding-left: 18px; margin: 8px 0 16px; }
+    .rules li { margin: 4px 0; }
 
-/* ── NEXT BTN ── */
-.next-btn {
-  display: block; width: 100%; padding: 14px;
-  background: linear-gradient(135deg, var(--orange), var(--pink));
-  border: none; border-radius: 14px; color: white;
-  font-family: 'Fredoka One', cursive; font-size: 1.2rem;
-  cursor: pointer; transition: all 0.2s; margin-bottom: 14px;
-}
-.next-btn:hover { transform: scale(1.01); opacity: 0.95; }
+    /* Sound toggle */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .toggle-row .label-text { font-size: 14px; color: var(--text); }
+    .toggle-row .label-hint { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .switch {
+      position: relative; width: 44px; height: 24px;
+      background: rgba(255,255,255,0.12); border-radius: 999px; cursor: pointer; flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+    .switch::after {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+      background: #fff; border-radius: 50%; transition: left 0.2s ease;
+    }
+    .switch.on { background: var(--accent); }
+    .switch.on::after { left: 22px; }
 
-/* ── GAME OVER SCREEN ── */
-.go-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 24px; padding: 32px 24px; text-align: center; margin-bottom: 20px;
-}
-.go-title {
-  font-family: 'Fredoka One', cursive; font-size: 2.5rem; margin-bottom: 4px;
-  background: linear-gradient(135deg, var(--yellow), var(--orange), var(--pink));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.go-subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 24px; }
-.go-score-big {
-  font-family: 'Fredoka One', cursive; font-size: 5rem; line-height: 1;
-  color: var(--yellow); margin-bottom: 4px;
-}
-.go-score-label { color: #8b949e; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+    /* Game screen */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .stat-pill {
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .stat-pill.score { color: var(--accent); background: var(--accent-soft); }
+    .stat-pill.score.negative { color: var(--warn); background: var(--warn-soft); }
+    .stat-pill.timer { color: var(--warn); background: var(--warn-soft); }
+    .sound-btn {
+      width: 36px; height: 36px; padding: 0; background: transparent;
+      border: 1px solid rgba(255,255,255,0.12); color: var(--text-dim); border-radius: 8px;
+      font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .sound-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); box-shadow: none; }
 
-.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
-.stat-card {
-  background: var(--card2); border-radius: 14px; padding: 14px;
-  border: 1px solid var(--border); text-align: left;
-}
-.stat-label { font-size: 0.72rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-.stat-value { font-family: 'Fredoka One', cursive; font-size: 1.5rem; }
-.stat-sub { font-size: 0.72rem; color: #8b949e; margin-top: 2px; }
+    .question {
+      font-size: 30px;
+      font-weight: 700;
+      margin: 18px 0;
+      padding: 18px 12px;
+      letter-spacing: -0.01em;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+    }
 
-.accuracy-breakdown { margin-bottom: 24px; text-align: left; }
-.ab-title { font-family: 'Fredoka One', cursive; color: var(--blue); margin-bottom: 12px; font-size: 1rem; }
-.ab-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.ab-name { font-size: 0.8rem; color: #8b949e; min-width: 130px; }
-.ab-bar-bg { flex: 1; height: 8px; background: var(--card2); border-radius: 50px; overflow: hidden; }
-.ab-bar { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--blue), var(--purple)); }
-.ab-pct { font-family: 'Fredoka One', cursive; font-size: 0.85rem; min-width: 36px; text-align: right; }
+    /* Stacked fraction (used inline within questions) */
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      line-height: 1;
+      font-size: 0.85em;
+      margin: 0 4px;
+    }
+    .frac .num { padding: 0 6px 4px; border-bottom: 2px solid currentColor; }
+    .frac .den { padding: 4px 6px 0; }
 
-.play-again-btn {
-  display: block; width: 100%; padding: 16px;
-  background: linear-gradient(135deg, var(--orange), var(--pink));
-  border: none; border-radius: 16px; color: white;
-  font-family: 'Fredoka One', cursive; font-size: 1.3rem;
-  cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
-}
-.play-again-btn:hover { transform: scale(1.02); }
-.change-diff-btn {
-  display: block; width: 100%; padding: 13px;
-  background: var(--card2); border: 2px solid var(--border);
-  border-radius: 14px; color: #8b949e;
-  font-family: 'Fredoka One', cursive; font-size: 1rem;
-  cursor: pointer; transition: all 0.2s;
-}
-.change-diff-btn:hover { border-color: var(--blue); color: var(--blue); }
+    /* Side-by-side option cards used by the fraction-compare question */
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+    }
+    .choice-card {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 12px;
+      min-width: 100px;
+    }
+    .choice-card .opt-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #002b22;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .choice-prompt {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .choice-hint {
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-top: 8px;
+      letter-spacing: 0;
+    }
 
-/* ── ANIMATIONS ── */
-@keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
-@keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
-@keyframes fadeUp { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
-@keyframes heartLost { 0%{transform:scale(1)} 30%{transform:scale(1.4)} 60%{transform:scale(0.6)} 100%{transform:scale(1)} }
-.heart-shake { animation: heartLost 0.4s; }
+    .feedback {
+      text-align: center;
+      margin: 12px 0 0;
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 44px;
+      font-size: 15px;
+      font-weight: 500;
+      transition: opacity 0.3s ease;
+    }
+    .feedback.correct { background-color: rgba(46, 204, 113, 0.18); color: #7df0a8; }
+    .feedback.incorrect { background-color: rgba(231, 76, 60, 0.18); color: #ff8b80; }
+    .feedback.muted { background-color: rgba(255,255,255,0.05); color: var(--text-dim); }
+    .pulse { animation: pulse 0.35s ease-out; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+    .fade-in { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-.confetti-piece {
-  position: fixed; top: -10px;
-  width: 8px; height: 8px; pointer-events: none;
-  animation: confettiFall linear forwards;
-}
-@keyframes confettiFall {
-  to { transform: translateY(110vh) rotate(900deg); opacity: 0; }
-}
-</style>
+    /* Result screen */
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin: 16px 0 22px;
+    }
+    .stat-box {
+      padding: 14px 10px;
+      border-radius: 10px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .stat-box .num {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+    .stat-box .label {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+    .stat-box.warn .num { color: var(--warn); }
+
+    .verdict {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .final-score {
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 4px 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .final-score.negative { color: var(--warn); }
+    .final-meta {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    /* Mistake review */
+    .mistake-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .mistake-q {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .mistake-line {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin: 2px 0;
+    }
+    .mistake-line .you { color: #ff8b80; font-weight: 600; }
+    .mistake-line .correct { color: #7df0a8; font-weight: 600; }
+    .mistake-tip {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: var(--tip-bg);
+      border-left: 3px solid var(--tip-border);
+      border-radius: 6px;
+      color: var(--tip-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .mistake-tip strong { color: #fff3c2; }
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-dim);
+    }
+    .empty-state .big { font-size: 40px; margin-bottom: 8px; }
+
+    /* Leaderboard */
+    .lb-list { list-style: none; padding: 0; margin: 0 0 8px; }
+    .lb-list li {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 15px;
+    }
+    .lb-list li.is-new {
+      background: var(--accent-soft);
+      border-color: rgba(0, 255, 204, 0.4);
+    }
+    .lb-rank { color: var(--text-dim); font-weight: 600; text-align: center; }
+    .lb-name { font-weight: 600; }
+    .lb-meta { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .lb-score { color: var(--accent); font-weight: 700; }
+    .lb-list li.is-new .lb-score::after { content: ' ⭐ NEW'; font-size: 11px; color: var(--accent); }
+
+    .lb-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      margin: 16px 0 8px;
+      color: var(--text-dim);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Hide spinner buttons on number input (cosmetic; we use inputmode anyway) */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+  </style>
 </head>
 <body>
+  <div class="brand">Math Sprint</div>
 
-<!-- ════════ WELCOME SCREEN ════════ -->
-<div id="welcomeScreen" class="screen active">
-<div class="container">
-  <div style="padding-top:40px;padding-bottom:40px">
-    <div class="logo">Factor Force 🚀</div>
-    <div class="tagline">Factors &amp; Prime Numbers · Solo Challenge</div>
+  <!-- Intro Screen -->
+  <div class="panel" id="intro-screen">
+    <p class="final-meta" style="margin: 0 0 20px; font-size: 16px;">Calculate fast. Build insight. Beat your best.</p>
 
-    <div class="name-input-wrap">
-      <label>Your name</label>
-      <input type="text" id="playerName" placeholder="Enter your name..." maxlength="20" />
+    <div class="field">
+      <label for="player-name">Your name</label>
+      <input type="text" id="player-name" placeholder="e.g. Sara" autocomplete="off" maxlength="20">
     </div>
 
-    <div style="font-weight:700;color:#8b949e;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Choose difficulty</div>
-    <div class="diff-grid">
-      <div class="diff-card selected" data-diff="cadet" onclick="selectDiff(this)">
-        <div class="diff-icon">🌱</div>
-        <div class="diff-name">Cadet</div>
-        <div class="diff-desc">Numbers up to 60 · 30 sec timer</div>
-      </div>
-      <div class="diff-card" data-diff="explorer" onclick="selectDiff(this)">
-        <div class="diff-icon">🔭</div>
-        <div class="diff-name">Explorer</div>
-        <div class="diff-desc">Numbers up to 100 · 35 sec timer</div>
-      </div>
-      <div class="diff-card" data-diff="champion" onclick="selectDiff(this)">
-        <div class="diff-icon">🏆</div>
-        <div class="diff-name">Champion</div>
-        <div class="diff-desc">Numbers up to 200 · 40 sec timer</div>
-      </div>
+    <div class="field">
+      <label for="grade-level">Level</label>
+      <select id="grade-level">
+        <option value="3">Year 3–4 · Easy</option>
+        <option value="4">Year 4–5 · Medium</option>
+        <option value="5" selected>Year 5–6 · Hard</option>
+        <option value="6">Year 6–7 · Extreme</option>
+      </select>
     </div>
 
-    <button class="start-btn" onclick="startGame()">Let's Go! 🚀</button>
-
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:20px;font-size:0.83rem;color:#8b949e;line-height:1.7;">
-      <div style="font-family:'Fredoka One',cursive;color:var(--blue);margin-bottom:6px;">📚 Five question types</div>
-      <strong style="color:#e6edf3;">⭐ Prime or Composite?</strong> · <strong style="color:#e6edf3;">🔢 Find All Factors</strong> · <strong style="color:#e6edf3;">🎯 Is X a factor of Y?</strong> · <strong style="color:#e6edf3;">🔢 Count the Factors</strong> · <strong style="color:#e6edf3;">🧩 Find the Factor Pair</strong>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ════════ GAME SCREEN ════════ -->
-<div id="gameScreen" class="screen">
-<div class="container">
-
-  <!-- HUD -->
-  <div class="hud">
-    <div class="hud-name" id="hudName">Player</div>
-    <div class="diff-badge cadet" id="diffBadge">Cadet</div>
-    <div class="streak-badge" id="streakBadge">🔥 <span id="streakCount">0</span>x streak!</div>
-    <div class="score-badge">⭐ <span id="hudScore">0</span></div>
-    <div class="lives" id="livesWrap">
-      <div class="heart" id="h0">❤️</div>
-      <div class="heart" id="h1">❤️</div>
-      <div class="heart" id="h2">❤️</div>
-    </div>
-  </div>
-
-  <!-- Timer -->
-  <div class="timer-wrap">
-    <div class="timer-bar-bg"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
-    <div class="timer-num" id="timerNum">30</div>
-  </div>
-
-  <!-- Question card -->
-  <div class="game-card" id="gameCard">
-    <!-- Filled by JS -->
-  </div>
-
-  <!-- Explainer -->
-  <div class="explainer" id="explainer">
-    <div class="explainer-header">
-      <div class="explainer-icon" id="explIcon">💡</div>
-      <div class="explainer-title" id="explTitle">Let's break it down</div>
-    </div>
-    <div class="explainer-body" id="explBody"></div>
-  </div>
-
-  <!-- Next button -->
-  <button class="next-btn" id="nextBtn" onclick="nextQuestion()" style="display:none">
-    Next Problem ➡️
-  </button>
-
-  <!-- Q counter -->
-  <div style="text-align:center;color:#484f58;font-size:0.78rem;font-weight:700;letter-spacing:1px;">
-    QUESTION <span id="qCounter">1</span> OF 15
-  </div>
-
-</div>
-</div>
-
-<!-- ════════ GAME OVER SCREEN ════════ -->
-<div id="gameOverScreen" class="screen">
-<div class="container">
-  <div style="padding-top:30px">
-  <div class="go-card">
-    <div class="go-title" id="goTitle">Game Over!</div>
-    <div class="go-subtitle" id="goSubtitle">Here's how you did</div>
-    <div class="go-score-big" id="goScore">0</div>
-    <div class="go-score-label">Total Points</div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Correct</div>
-        <div class="stat-value" id="goCorrect" style="color:var(--green)">0</div>
-        <div class="stat-sub" id="goTotal">of 0 questions</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Best Streak</div>
-        <div class="stat-value" id="goBestStreak" style="color:var(--orange)">0</div>
-        <div class="stat-sub">in a row 🔥</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Accuracy</div>
-        <div class="stat-value" id="goAccuracy" style="color:var(--blue)">0%</div>
-        <div class="stat-sub" id="goAccSub"></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Time Bonuses</div>
-        <div class="stat-value" id="goTimeBonus" style="color:var(--purple)">0</div>
-        <div class="stat-sub">speed points ⚡</div>
-      </div>
+    <div class="field">
+      <label for="game-duration">Game duration</label>
+      <select id="game-duration">
+        <option value="60">1 minute</option>
+        <option value="120">2 minutes</option>
+        <option value="180" selected>3 minutes</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+      </select>
     </div>
 
-    <div class="accuracy-breakdown" id="accuracyBreakdown"></div>
+    <div class="toggle-row">
+      <div>
+        <div class="label-text">Sound</div>
+        <div class="label-hint">Plays a chime at game end.</div>
+      </div>
+      <div class="switch on" id="sound-switch" role="switch" aria-checked="true" tabindex="0"></div>
+    </div>
+
+    <h2>Rules</h2>
+    <ul class="rules">
+      <li>Answer as many as you can before time runs out</li>
+      <li>Correct: <strong>+3</strong> · Incorrect: <strong>−1</strong></li>
+      <li id="operations-list">Mix of arithmetic and insight questions</li>
+      <li>Press <strong>Enter</strong> to submit</li>
+    </ul>
+
+    <button onclick="startGame()">Start</button>
+    <div style="height:8px;"></div>
+    <button class="ghost" onclick="showLeaderboardFromIntro()">View leaderboard</button>
   </div>
 
-  <button class="play-again-btn" onclick="playAgain()">Play Again 🚀</button>
-  <button class="change-diff-btn" onclick="showWelcome()">Change Difficulty</button>
+  <!-- Game Screen -->
+  <div class="panel" id="game-screen" style="display:none;">
+    <div class="stats">
+      <div class="stat-pill score">Score <span id="score">0</span></div>
+      <button class="sound-btn" id="sound-btn-game" onclick="toggleSound()" title="Toggle sound" aria-label="Toggle sound">🔇</button>
+      <div class="stat-pill timer">⏱ <span id="timer">3:00</span></div>
+    </div>
+    <div class="question" id="question"></div>
+    <input type="number" id="answer" placeholder="Your answer" inputmode="decimal" autocomplete="off">
+    <div style="height:10px;"></div>
+    <button id="submit-btn" onclick="checkAnswer()">Submit</button>
+    <div class="feedback" id="feedback"></div>
   </div>
-</div>
-</div>
 
-<script>
-// ═══════════════════════════════════════════════
-//  MATHS UTILITIES
-// ═══════════════════════════════════════════════
-function getFactors(n) {
-  const f = [];
-  for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
-  return f;
-}
-function isPrime(n) {
-  if (n < 2) return false;
-  for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
-  return true;
-}
-function primeFactors(n) {
-  const factors = [];
-  let d = 2;
-  while (n > 1) {
-    while (n % d === 0) { factors.push(d); n /= d; }
-    d++;
+  <!-- Result Screen -->
+  <div class="panel" id="result-screen" style="display:none;">
+    <div class="verdict" id="verdict"></div>
+    <div class="final-score" id="final-score">0</div>
+    <div class="final-meta" id="final-meta"></div>
+
+    <div class="result-stats">
+      <div class="stat-box"><span class="num" id="correct-count">0</span><div class="label">Correct</div></div>
+      <div class="stat-box warn"><span class="num" id="incorrect-count">0</span><div class="label">Incorrect</div></div>
+      <div class="stat-box"><span class="num" id="total-count">0</span><div class="label">Total</div></div>
+      <div class="stat-box"><span class="num" id="accuracy">0%</span><div class="label">Accuracy</div></div>
+      <div class="stat-box"><span class="num" id="qpm">0</span><div class="label">Per minute</div></div>
+      <div class="stat-box"><span class="num" id="avg-time">0s</span><div class="label">Avg time</div></div>
+    </div>
+
+    <div class="button-row">
+      <button onclick="showMistakeReview()" id="review-btn">Review mistakes</button>
+      <button class="secondary" onclick="showLeaderboard()">Leaderboard</button>
+    </div>
+    <div style="height:8px;"></div>
+    <button class="ghost" onclick="resetGame()">Play again</button>
+  </div>
+
+  <!-- Mistake Review Screen -->
+  <div class="panel" id="review-screen" style="display:none;">
+    <h1>Review your mistakes</h1>
+    <p class="final-meta" style="margin-top:-8px;">Each tip shows a faster way to think about the problem.</p>
+    <div id="mistake-list"></div>
+    <button class="ghost" onclick="backToResult()">← Back to results</button>
+  </div>
+
+  <!-- Leaderboard Screen -->
+  <div class="panel" id="leaderboard-screen" style="display:none;">
+    <h1>Leaderboard</h1>
+    <div class="lb-controls">
+      <select id="lb-level"></select>
+      <select id="lb-duration"></select>
+    </div>
+    <ol class="lb-list" id="lb-list"></ol>
+    <p class="final-meta" id="lb-meta"></p>
+    <button class="ghost" onclick="backToResult()">← Back</button>
+  </div>
+
+  <footer class="footer">
+    <p>Powered by <a href="https://tamimsthinklab.com/" target="_blank" rel="noopener">Tamim's ThinkLab</a></p>
+  </footer>
+
+  <script>
+  // ===== State =====
+  let score = 0;
+  let timeLeft = 180;
+  let gameDuration = 180;
+  let timerInterval = null;
+  let currentQuestion = null;
+  let questionStartTime = 0;
+  let correctAnswers = 0;
+  let incorrectAnswers = 0;
+  let totalAnswered = 0;
+  let gradeLevel = 5;
+  let playerName = "";
+  let mistakes = []; // {text, userAnswer, correctAnswer, tip, topic}
+  let responseTimes = []; // ms
+  let soundEnabled = false;
+  let lastNewLeaderboardIdx = -1;
+  let leaderboardOrigin = 'result'; // 'result' or 'intro'
+  let wrongAnswerTimeout = null;     // tracks the 900ms pause timer
+  let awaitingNext = false;          // true while we're holding for the next question
+  let gameStartedAt = 0;             // wall-clock ms when current game started
+  let seenQuestions = new Set();     // question texts already used in this game
+
+  // ===== Persistence =====
+  const LS_SOUND = 'tlms_sound';
+  const LS_LB = 'tlms_lb_v1';
+
+  function loadSoundPref() {
+    const v = localStorage.getItem(LS_SOUND);
+    // Default ON — only off if the user has explicitly turned it off.
+    soundEnabled = (v === null) ? true : (v === '1');
+    updateSoundUI();
   }
-  return factors;
-}
-function getFactorPairs(n) {
-  const pairs = [];
-  for (let i = 1; i <= Math.sqrt(n); i++) {
-    if (n % i === 0) pairs.push([i, n / i]);
+  function saveSoundPref() {
+    localStorage.setItem(LS_SOUND, soundEnabled ? '1' : '0');
   }
-  return pairs;
-}
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+
+  function getAllLeaderboards() {
+    try { return JSON.parse(localStorage.getItem(LS_LB) || '{}'); }
+    catch (e) { return {}; }
   }
-  return a;
-}
-function randFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function saveAllLeaderboards(obj) {
+    try { localStorage.setItem(LS_LB, JSON.stringify(obj)); }
+    catch (e) { /* quota */ }
+  }
+  function lbKey(level, duration) { return level + '_' + duration; }
+  function getLeaderboard(level, duration) {
+    const all = getAllLeaderboards();
+    return all[lbKey(level, duration)] || [];
+  }
+  function recordScore(level, duration, entry) {
+    const all = getAllLeaderboards();
+    const key = lbKey(level, duration);
+    const list = all[key] || [];
+    list.push(entry);
+    list.sort((a, b) => b.score - a.score);
+    list.length = Math.min(list.length, 10);
+    all[key] = list;
+    saveAllLeaderboards(all);
+    // Returns -1 if entry was truncated off the bottom of the top 10.
+    return list.indexOf(entry);
+  }
 
-// ═══════════════════════════════════════════════
-//  CONFIG
-// ═══════════════════════════════════════════════
-const DIFF_CONFIG = {
-  cadet:    { max: 60,  time: 30, label: 'Cadet',    badge: 'cadet' },
-  explorer: { max: 100, time: 35, label: 'Explorer', badge: 'explorer' },
-  champion: { max: 200, time: 40, label: 'Champion', badge: 'champion' },
-};
-const TOTAL_QUESTIONS = 15;
-const QTYPES = ['prime','factors','isfactor','count','pair'];
-const QTYPE_LABELS = {
-  prime:    'Prime or Composite?',
-  factors:  'Find All Factors',
-  isfactor: 'Is it a Factor?',
-  count:    'Count the Factors',
-  pair:     'Factor Pair',
-};
-
-// ═══════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════
-let playerName = 'Player';
-let difficulty = 'cadet';
-let score = 0;
-let lives = 3;
-let streak = 0;
-let bestStreak = 0;
-let questionNum = 0;
-let answered = false;
-let timerInterval = null;
-let timerLeft = 30;
-let totalTime = 30;
-let currentQ = null;
-let totalTimeBonus = 0;
-// Stats per qtype
-let qStats = {}; // { prime: { correct:0, total:0 }, ... }
-QTYPES.forEach(t => qStats[t] = { correct: 0, total: 0 });
-
-// ═══════════════════════════════════════════════
-//  WELCOME / SETUP
-// ═══════════════════════════════════════════════
-function selectDiff(el) {
-  document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  difficulty = el.dataset.diff;
-}
-
-function startGame() {
-  const nameEl = document.getElementById('playerName');
-  playerName = nameEl.value.trim() || 'Explorer';
-  score = 0; lives = 3; streak = 0; bestStreak = 0; questionNum = 0; totalTimeBonus = 0;
-  QTYPES.forEach(t => qStats[t] = { correct: 0, total: 0 });
-
-  document.getElementById('hudName').textContent = playerName;
-  const cfg = DIFF_CONFIG[difficulty];
-  const badge = document.getElementById('diffBadge');
-  badge.textContent = cfg.label;
-  badge.className = 'diff-badge ' + cfg.badge;
-  updateLives();
-  updateScore();
-
-  showScreen('gameScreen');
-  generateQuestion();
-}
-
-function showWelcome() { showScreen('welcomeScreen'); }
-
-function playAgain() {
-  // keep same name + difficulty
-  document.getElementById('playerName').value = playerName;
-  startGame();
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// ═══════════════════════════════════════════════
-//  QUESTION GENERATION
-// ═══════════════════════════════════════════════
-function generateQuestion() {
-  answered = false;
-  questionNum++;
-  document.getElementById('qCounter').textContent = questionNum;
-  document.getElementById('explainer').classList.remove('show');
-  document.getElementById('nextBtn').style.display = 'none';
-  document.getElementById('nextBtn').textContent = 'Next Problem ➡️';
-
-  const cfg = DIFF_CONFIG[difficulty];
-  const qtype = randFrom(QTYPES);
-  currentQ = buildQuestion(qtype, cfg.max);
-
-  renderQuestion(currentQ);
-  startTimer(cfg.time);
-}
-
-function buildQuestion(qtype, max) {
-  const q = { type: qtype };
-
-  if (qtype === 'prime') {
-    // 50% prime, 50% composite
-    const usePrime = Math.random() < 0.5;
-    const candidates = [];
-    for (let i = 2; i <= max; i++) {
-      if (isPrime(i) === usePrime) candidates.push(i);
+  // ===== Sound =====
+  function updateSoundUI() {
+    const btn = document.getElementById('sound-btn-game');
+    if (btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+    const sw = document.getElementById('sound-switch');
+    if (sw) {
+      sw.classList.toggle('on', soundEnabled);
+      sw.setAttribute('aria-checked', soundEnabled ? 'true' : 'false');
     }
-    q.n = randFrom(candidates);
-    q.answer = isPrime(q.n);
+  }
+  function toggleSound() {
+    soundEnabled = !soundEnabled;
+    saveSoundPref();
+    updateSoundUI();
+    if (soundEnabled) primeAudio(); // unlock audio in this gesture
+  }
 
-  } else if (qtype === 'factors') {
-    // Grid is only usable for smaller numbers — cap at 60 regardless of difficulty
-    const gridMax = Math.min(max, 60);
-    const candidates = [];
-    for (let i = 4; i <= gridMax; i++) {
-      if (!isPrime(i) && getFactors(i).length >= 4) candidates.push(i);
+  // Single shared AudioContext — creating one per game leaks (browsers cap at ~6).
+  let sharedAudioCtx = null;
+  function getAudioContext() {
+    if (!sharedAudioCtx) {
+      try {
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) return null;
+        sharedAudioCtx = new Ctor();
+      } catch (e) { return null; }
     }
-    q.n = randFrom(candidates);
-    q.answer = getFactors(q.n);
+    if (sharedAudioCtx.state === 'suspended') {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+    return sharedAudioCtx;
+  }
 
-  } else if (qtype === 'isfactor') {
-    // Pick a number, then pick a potential factor (50% correct, 50% wrong)
-    q.n = randInt(6, max);
-    const factors = getFactors(q.n);
-    const nonFactors = [];
-    const checkMax = Math.min(q.n - 1, 100);
-    for (let i = 2; i <= checkMax; i++) {
-      if (!factors.includes(i)) nonFactors.push(i);
+  // Browsers (especially Safari/iOS) require AudioContext creation/resume to happen
+  // INSIDE a user gesture handler. Lazy-creating it later from a setInterval callback
+  // (e.g. when the timer expires) leaves the context suspended and the chime silent.
+  // primeAudio() must be called from a click/keydown handler — Start button or sound toggle.
+  function primeAudio() {
+    if (!soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    // Play a near-silent tick to fully unlock the context.
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.01);
+    } catch (e) { /* ignore */ }
+  }
+
+  function playEndSound(scoreVal) {
+    if (!soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    try {
+      const notes = scoreVal >= 30 ? [523.25, 659.25, 783.99, 1046.50] // C E G C
+                                   : [523.25, 659.25, 783.99]; // C E G
+      let t = ctx.currentTime;
+      notes.forEach((freq) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.18, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.34);
+        t += 0.18;
+      });
+    } catch (e) { /* ignore */ }
+  }
+
+  // ===== Helpers =====
+  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // Render an inline stacked fraction as HTML. Accepts numbers or strings (e.g., '?').
+  function frac(n, d) {
+    return `<span class="frac" role="math" aria-label="${n} over ${d}"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+  }
+
+  function fmtTime(ms) {
+    if (!isFinite(ms) || ms <= 0) return '0s';
+    const s = ms / 1000;
+    return (s < 10 ? s.toFixed(1) : Math.round(s).toString()) + 's';
+  }
+
+  // Cancel any in-flight wrong-answer pause. Safe to call repeatedly.
+  function cancelWrongAnswerPause() {
+    if (wrongAnswerTimeout) {
+      clearTimeout(wrongAnswerTimeout);
+      wrongAnswerTimeout = null;
     }
-    if (Math.random() < 0.5 || nonFactors.length === 0) {
-      // pick a real factor (not 1 or n itself)
-      const inner = factors.filter(f => f !== 1 && f !== q.n);
-      q.candidate = inner.length > 0 ? randFrom(inner) : factors[0];
-      q.answer = true;
+    awaitingNext = false;
+    const inputEl = document.getElementById('answer');
+    const submitBtn = document.getElementById('submit-btn');
+    if (inputEl) inputEl.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
+  }
+
+  // Update the in-game score pill, including red styling when negative.
+  function updateScoreDisplay() {
+    const el = document.getElementById('score');
+    el.textContent = score;
+    el.parentElement.classList.toggle('negative', score < 0);
+  }
+
+  // ===== Question generators =====
+  // Each returns { text, answer, tip, topic, isMultipleChoice? }
+
+  function qAddition(grade) {
+    let n1, n2;
+    if (grade <= 3) { n1 = rand(10, 50); n2 = rand(10, 50); }
+    else if (grade === 4) { n1 = rand(20, 200); n2 = rand(20, 200); }
+    else if (grade === 5) { n1 = rand(50, 500); n2 = rand(50, 500); }
+    else { n1 = rand(100, 999); n2 = rand(100, 999); }
+    const ans = n1 + n2;
+    let tip;
+    if (n2 % 10 === 0) {
+      // Already round; just show the column add intuition
+      const tens = Math.floor(n2 / 10) * 10;
+      tip = `${n2} is round. Add the tens straight onto ${n1}: ${n1} + ${tens} = ${ans}.`;
     } else {
-      q.candidate = randFrom(nonFactors.slice(0, 20));
-      q.answer = false;
+      const round = Math.round(n2 / 10) * 10;
+      const diff = round - n2;
+      tip = `Round ${n2} to ${round}, then adjust. ${n1} + ${round} = ${n1 + round}, ${diff >= 0 ? 'minus' : 'plus'} ${Math.abs(diff)} = ${ans}.`;
     }
+    return { text: `${n1} + ${n2} = ?`, answer: ans, tip, topic: 'addition' };
+  }
 
-  } else if (qtype === 'count') {
-    // Pick any number, answer = # of factors, provide 4 MC options
-    const candidates = [];
-    for (let i = 4; i <= max; i++) candidates.push(i);
-    q.n = randFrom(candidates);
-    const correct = getFactors(q.n).length;
-    q.answer = correct;
-    // generate wrong options
-    const opts = new Set([correct]);
-    while (opts.size < 4) {
-      const o = correct + randFrom([-3,-2,-1,1,2,3,4]);
-      if (o > 0) opts.add(o);
-    }
-    q.options = shuffle([...opts]);
-
-  } else if (qtype === 'pair') {
-    // show a factor pair with one missing: n = a × ?
-    const candidates = [];
-    for (let i = 6; i <= max; i++) {
-      if (getFactorPairs(i).length >= 2) candidates.push(i);
-    }
-    q.n = randFrom(candidates);
-    const pairs = getFactorPairs(q.n);
-    const pair = randFrom(pairs.filter(p => p[0] !== p[1]) || pairs);
-    // Show either a×? = n or ?×b = n
-    if (Math.random() < 0.5) {
-      q.known = pair[0];
-      q.answer = pair[1];
+  function qSubtraction(grade) {
+    // Always n1 > n2 so answers are positive and never zero (no trivial freebies).
+    let n1, n2;
+    if (grade === 3) { n1 = rand(30, 100); n2 = rand(1, n1 - 1); }
+    else if (grade === 4) { n1 = rand(50, 250); n2 = rand(10, n1 - 1); }
+    else if (grade === 5) { n1 = rand(100, 500); n2 = rand(20, n1 - 1); }
+    else { n1 = rand(200, 999); n2 = rand(50, n1 - 1); }
+    const ans = n1 - n2;
+    let tip;
+    if (n2 % 10 === 0) {
+      tip = `${n2} is round. Subtract straight: ${n1} − ${n2} = ${ans}.`;
     } else {
-      q.known = pair[1];
-      q.answer = pair[0];
+      const round = Math.ceil(n2 / 10) * 10;
+      tip = `Round ${n2} up to ${round}: ${n1} − ${round} = ${n1 - round}, then add ${round - n2} back = ${ans}.`;
+    }
+    return { text: `${n1} − ${n2} = ?`, answer: ans, tip, topic: 'subtraction' };
+  }
+
+  function qMultiplication(grade) {
+    let n1, n2;
+    if (grade <= 4) { n1 = rand(2, 12); n2 = rand(2, 12); }
+    else if (grade === 5) {
+      // 2-digit × 1-digit
+      n1 = rand(11, 99); n2 = rand(2, 9);
+    } else {
+      // mix: 2-digit × 1-digit AND occasional 2-digit × 2-digit (small)
+      if (Math.random() < 0.6) { n1 = rand(11, 99); n2 = rand(2, 9); }
+      else { n1 = rand(11, 25); n2 = rand(11, 19); }
+    }
+    const ans = n1 * n2;
+    let tip;
+    if (n2 < 10) {
+      const tens = Math.floor(n1 / 10) * 10;
+      const ones = n1 - tens;
+      tip = `Split ${n1} = ${tens} + ${ones}. ${tens} × ${n2} = ${tens * n2}, ${ones} × ${n2} = ${ones * n2}. Add: ${ans}.`;
+    } else {
+      tip = `${n1} × ${n2}: do ${n1} × ${Math.floor(n2/10)*10} = ${n1 * Math.floor(n2/10)*10}, then ${n1} × ${n2 - Math.floor(n2/10)*10} = ${n1 * (n2 - Math.floor(n2/10)*10)}. Add: ${ans}.`;
+    }
+    return { text: `${n1} × ${n2} = ?`, answer: ans, tip, topic: 'multiplication' };
+  }
+
+  function qDivision(grade) {
+    // Always clean division (no decimals). Occasional remainder question at higher grades.
+    if (grade >= 6 && Math.random() < 0.25) {
+      // Remainder question
+      const divisor = rand(3, 12);
+      const quotient = rand(2, 20);
+      const remainder = rand(1, divisor - 1);
+      const dividend = divisor * quotient + remainder;
+      const tip = `${dividend} ÷ ${divisor}: largest multiple of ${divisor} not over ${dividend} is ${divisor * quotient} (= ${divisor} × ${quotient}). Remainder: ${dividend} − ${divisor * quotient} = ${remainder}.`;
+      return { text: `Remainder when ${dividend} ÷ ${divisor} = ?`, answer: remainder, tip, topic: 'division-remainder' };
+    }
+    let divisor, quotient;
+    if (grade <= 4) { divisor = rand(2, 9); quotient = rand(2, 10); }
+    else if (grade === 5) { divisor = rand(2, 12); quotient = rand(2, 15); }
+    else { divisor = rand(3, 12); quotient = rand(5, 25); }
+    const dividend = divisor * quotient;
+    const tip = `Think: ${divisor} × ? = ${dividend}. Answer: ${quotient}.`;
+    return { text: `${dividend} ÷ ${divisor} = ?`, answer: quotient, tip, topic: 'division' };
+  }
+
+  function qFractions(grade) {
+    const denominators = grade <= 4 ? [2, 3, 4, 5, 10] : [2, 3, 4, 5, 6, 8, 10, 12];
+    const d = pick(denominators);
+    const r = Math.random();
+    if (r < 0.5) {
+      // n/d of X (X divisible by d for clean answer)
+      const multiple = rand(2, grade <= 4 ? 8 : 12);
+      const x = d * multiple;
+      const n = rand(1, d - 1);
+      const ans = (x * n) / d;
+      const tip = n === 1
+        ? `1/${d} of ${x} just means ${x} ÷ ${d} = ${ans}.`
+        : `${x} ÷ ${d} = ${x/d}. So 1/${d} of ${x} is ${x/d}, and ${n}/${d} is ${n} × ${x/d} = ${ans}.`;
+      return {
+        text: `${n}/${d} of ${x} = ?`,
+        html: `${frac(n, d)} of ${x} = ?`,
+        answer: ans, tip, topic: 'fractions-of'
+      };
+    } else {
+      // Equivalent fraction: n1/d1 = ?/d2  (find numerator)
+      const n1 = rand(1, d - 1);
+      const k = rand(2, 5);
+      const d2 = d * k;
+      const ans = n1 * k;
+      const tip = `Denominator went from ${d} to ${d2} (× ${k}). So numerator: ${n1} × ${k} = ${ans}.`;
+      return {
+        text: `${n1}/${d} = ?/${d2}`,
+        html: `${frac(n1, d)} = ${frac('?', d2)}`,
+        answer: ans, tip, topic: 'fractions-equiv'
+      };
     }
   }
 
-  return q;
-}
-
-// ═══════════════════════════════════════════════
-//  RENDERING
-// ═══════════════════════════════════════════════
-function renderQuestion(q) {
-  const card = document.getElementById('gameCard');
-  const pillClass = { prime:'qt-prime', factors:'qt-factors', isfactor:'qt-isfactor', count:'qt-count', pair:'qt-pair' }[q.type];
-
-  let html = `<div class="q-type-pill ${pillClass}">${QTYPE_LABELS[q.type]}</div>`;
-
-  if (q.type === 'prime') {
-    html += `
-      <div class="q-number">${q.n}</div>
-      <div class="q-sub">Is this number <strong style="color:var(--pink)">prime</strong> or <strong style="color:var(--orange)">composite</strong>?</div>
-      <div class="yn-wrap">
-        <button class="yn-btn yes" onclick="answerYN(true)">⭐ Prime</button>
-        <button class="yn-btn no" onclick="answerYN(false)">🔗 Composite</button>
-      </div>`;
-
-  } else if (q.type === 'factors') {
-    let grid = '<div class="num-grid" id="factorGrid">';
-    for (let i = 1; i <= q.n; i++) {
-      grid += `<button class="ng-btn" data-v="${i}" onclick="toggleFactor(this,${i})">${i}</button>`;
+  function qComplement(grade) {
+    let target;
+    if (grade <= 3) target = pick([10, 100]);
+    else if (grade === 4) target = pick([100, 100, 1000]);
+    else target = pick([100, 1000, 1000]);
+    const known = rand(target === 10 ? 1 : 11, target - 1);
+    const ans = target - known;
+    const nextRound = Math.ceil(known / 10) * 10;
+    let tip;
+    if (target === 10) {
+      tip = `Number bond to 10: ${known} + ${ans} = 10.`;
+    } else {
+      tip = `Step up: ${known} → ${nextRound} needs ${nextRound - known}. ${nextRound} → ${target} needs ${target - nextRound}. Total: ${ans}.`;
     }
-    grid += '</div>';
-    html += `
-      <div class="q-text">Tap <strong>every factor</strong> of the number below, then submit.</div>
-      <div class="q-number">${q.n}</div>
-      ${grid}
-      <button class="submit-factors" id="submitFactors" onclick="submitFactors()">Check My Factors 🚀</button>`;
+    return { text: `? + ${known} = ${target}`, answer: ans, tip, topic: 'complement' };
+  }
 
-  } else if (q.type === 'isfactor') {
-    html += `
-      <div class="q-text">Is <strong>${q.candidate}</strong> a factor of...</div>
-      <div class="q-number">${q.n}</div>
-      <div class="q-sub">${q.candidate} × ? = ${q.n} — does it work?</div>
-      <div class="yn-wrap">
-        <button class="yn-btn yes" onclick="answerYN(true)">✅ Yes!</button>
-        <button class="yn-btn no" onclick="answerYN(false)">❌ No</button>
-      </div>`;
+  function qHalvesDoubles(grade) {
+    const isDouble = Math.random() < 0.5;
+    let n;
+    if (grade <= 3) n = rand(20, 99);
+    else if (grade === 4) n = rand(50, 250);
+    else n = rand(100, 800);
+    if (!isDouble) n = n * 2; // ensure halving gives integer
+    const ans = isDouble ? n * 2 : n / 2;
+    const word = isDouble ? 'Double' : 'Half of';
 
-  } else if (q.type === 'count') {
-    let mc = '<div class="mc-grid">';
-    q.options.forEach(o => {
-      mc += `<button class="mc-btn" onclick="answerMC(this,${o})">${o}</button>`;
+    let tip;
+    if (isDouble) {
+      if (n < 100) {
+        tip = `Just double it: 2 × ${n} = ${ans}.`;
+      } else {
+        const tens = Math.floor(n / 10) * 10;
+        const ones = n - tens;
+        tip = ones === 0
+          ? `${n} is round. Double the tens: 2 × ${tens} = ${ans}.`
+          : `Split into tens + ones: 2 × ${tens} = ${tens * 2}, 2 × ${ones} = ${ones * 2}. Total: ${ans}.`;
+      }
+    } else {
+      if (n < 100) {
+        tip = `Just halve it: ${n} ÷ 2 = ${ans}.`;
+      } else if (n % 100 === 0) {
+        tip = `${n} is round. Halve the hundreds: ${n} ÷ 2 = ${ans}.`;
+      } else {
+        // Split into nearest lower hundred + remainder
+        const hundreds = Math.floor(n / 100) * 100;
+        const remainder = n - hundreds;
+        tip = `Halve in chunks. ${n} = ${hundreds} + ${remainder}. Half: ${hundreds / 2} + ${remainder / 2} = ${ans}.`;
+      }
+    }
+    return { text: `${word} ${n} = ?`, answer: ans, tip, topic: 'halves-doubles' };
+  }
+
+  function qSquare(grade) {
+    let n;
+    if (grade <= 4) n = rand(2, 12);
+    else if (grade === 5) n = rand(10, 20);
+    else n = rand(11, 25);
+    const ans = n * n;
+    let tip;
+    if (n <= 12) {
+      tip = `Times tables: ${n} × ${n} = ${ans}. Worth memorising squares 1²–12².`;
+    } else if (n === 15) {
+      tip = `Numbers ending in 5: tens digit × (tens digit + 1), then put "25" on the end. Here: 1 × 2 = 2, then 25 → 225.`;
+    } else if (n === 25) {
+      tip = `Numbers ending in 5: 2 × 3 = 6, then 25 → 625. (Worth memorising — comes up a lot.)`;
+    } else if (n === 20) {
+      tip = `20 × 20 = 400. A clean anchor for nearby squares.`;
+    } else if (n < 15) {
+      // 13, 14: split as 10 + ones
+      const ones = n - 10;
+      tip = `${n} × ${n} = ${n} × 10 + ${n} × ${ones} = ${n * 10} + ${n * ones} = ${ans}.`;
+    } else if (n < 20) {
+      // 16, 17, 18, 19: round up to 20 and subtract back
+      const adj = 20 - n;
+      tip = `Round ${n} up to 20: ${n} × 20 − ${n} × ${adj} = ${n * 20} − ${n * adj} = ${ans}.`;
+    } else {
+      // 21-24: anchor on 20
+      const adj = n - 20;
+      tip = `Use 20 as anchor: ${n} × 20 + ${n} × ${adj} = ${n * 20} + ${n * adj} = ${ans}.`;
+    }
+    return { text: `${n}² = ?`, answer: ans, tip, topic: 'square' };
+  }
+
+  function qMental25(grade) {
+    // 25 × N where N is a multiple of 4 (or close), gives clean result
+    const N = pick([8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48]);
+    const swap = Math.random() < 0.5;
+    const ans = 25 * N;
+    const groupsOf4 = N / 4;
+    const tip = `Trick: 25 × 4 = 100. So 25 × ${N} = 100 × (${N} ÷ 4) = 100 × ${groupsOf4} = ${ans}.`;
+    return {
+      text: swap ? `${N} × 25 = ?` : `25 × ${N} = ?`,
+      answer: ans, tip, topic: 'mental-25'
+    };
+  }
+
+  function qMental99(grade) {
+    // 99 × N or 101 × N
+    const useNinetyNine = Math.random() < 0.6;
+    const N = rand(11, 25);
+    if (useNinetyNine) {
+      const ans = 99 * N;
+      const tip = `99 = 100 − 1. So 99 × ${N} = 100 × ${N} − ${N} = ${100 * N} − ${N} = ${ans}.`;
+      return { text: `99 × ${N} = ?`, answer: ans, tip, topic: 'mental-99' };
+    } else {
+      const ans = 101 * N;
+      const tip = `101 = 100 + 1. So 101 × ${N} = 100 × ${N} + ${N} = ${100 * N} + ${N} = ${ans}.`;
+      return { text: `101 × ${N} = ?`, answer: ans, tip, topic: 'mental-101' };
+    }
+  }
+
+  function qPercentage(grade) {
+    let pct, base;
+    if (grade === 5) {
+      pct = pick([10, 25, 50, 75]);
+      base = pick([20, 40, 60, 80, 100, 120, 200, 400]);
+    } else {
+      pct = pick([5, 10, 15, 20, 25, 30, 50, 75]);
+      base = pick([20, 40, 60, 80, 100, 120, 160, 200, 240, 300, 400]);
+    }
+    const ans = (pct / 100) * base;
+    let tip;
+    if (pct === 50) tip = `50% = half. Half of ${base} = ${ans}.`;
+    else if (pct === 25) tip = `25% = quarter. ${base} ÷ 4 = ${ans}.`;
+    else if (pct === 75) tip = `75% = three quarters. ${base} ÷ 4 = ${base/4}. ${base/4} × 3 = ${ans}.`;
+    else if (pct === 10) tip = `10% means divide by 10. ${base} ÷ 10 = ${ans}.`;
+    else if (pct === 5) tip = `5% = half of 10%. 10% of ${base} = ${base/10}. Half: ${ans}.`;
+    else if (pct === 20) tip = `20% = double 10%. 10% of ${base} = ${base/10}. Double: ${ans}.`;
+    else if (pct === 15) {
+      const ten = base / 10, five = ten / 2;
+      tip = `15% = 10% + 5%. 10% of ${base} = ${ten}. 5% is half of that: ${five}. Add: ${ten} + ${five} = ${ans}.`;
+    }
+    else if (pct === 30) tip = `30% = 3 × 10%. 10% of ${base} = ${base/10}. × 3 = ${ans}.`;
+    else tip = `Convert: ${pct}% × ${base} = ${ans}.`;
+    // Round if not integer (shouldn't happen with our picks)
+    const finalAns = Number.isInteger(ans) ? ans : Math.round(ans * 100) / 100;
+    return { text: `${pct}% of ${base} = ?`, answer: finalAns, tip, topic: 'percentage' };
+  }
+
+  function qPattern(grade) {
+    const patterns = [
+      // Arithmetic: random start and step
+      () => {
+        const start = rand(2, 20), step = rand(2, 9);
+        const seq = [start, start + step, start + 2*step, start + 3*step];
+        return {
+          seq, ans: start + 4*step,
+          tip: `Adds ${step} each time. ${seq[3]} + ${step} = ${start + 4*step}.`
+        };
+      },
+      // n(n+1): pick a random starting n
+      () => {
+        const s = rand(1, 6);
+        const term = (n) => n * (n + 1);
+        const seq = [term(s), term(s+1), term(s+2), term(s+3)];
+        const d1 = seq[1]-seq[0], d2 = seq[2]-seq[1], d3 = seq[3]-seq[2];
+        const nextDiff = d3 + 2;
+        return {
+          seq, ans: term(s+4),
+          tip: `Differences: ${d1}, ${d2}, ${d3} (each one bigger by 2). Next difference: ${nextDiff}. So next term: ${seq[3]} + ${nextDiff} = ${seq[3] + nextDiff}. (Each term is also two consecutive numbers multiplied: ${s}×${s+1}, ${s+1}×${s+2}, ${s+2}×${s+3}, …)`
+        };
+      },
+      // Squares: pick a random starting n
+      () => {
+        const s = rand(1, 6);
+        const seq = [s*s, (s+1)*(s+1), (s+2)*(s+2), (s+3)*(s+3)];
+        return {
+          seq, ans: (s+4)*(s+4),
+          tip: `These are squares: ${s}², ${s+1}², ${s+2}², ${s+3}². Next: ${s+4}² = ${s+4} × ${s+4} = ${(s+4)*(s+4)}.`
+        };
+      },
+      // Doubling: random start
+      () => {
+        const start = rand(2, 5);
+        const seq = [start, start*2, start*4, start*8];
+        return {
+          seq, ans: start * 16,
+          tip: `Each term doubles. ${start*8} × 2 = ${start*16}.`
+        };
+      },
+      // Triangular numbers: pick a random starting n
+      () => {
+        const s = rand(1, 6);
+        const tri = (n) => n * (n + 1) / 2;
+        const seq = [tri(s), tri(s+1), tri(s+2), tri(s+3)];
+        const d1 = seq[1]-seq[0], d2 = seq[2]-seq[1], d3 = seq[3]-seq[2];
+        const nextDiff = d3 + 1;
+        return {
+          seq, ans: tri(s+4),
+          tip: `Differences: ${d1}, ${d2}, ${d3} (each one bigger by 1). Next difference: ${nextDiff}. So next term: ${seq[3]} + ${nextDiff} = ${seq[3] + nextDiff}. (These are triangular numbers — sums of 1+2+3+…)`
+        };
+      },
+    ];
+    const choice = pick(patterns)();
+    return {
+      text: `${choice.seq.join(', ')}, ?`,
+      answer: choice.ans,
+      tip: choice.tip,
+      topic: 'pattern'
+    };
+  }
+
+  function qFractionCompare(grade) {
+    // Pick two fractions with different denominators where one is clearly bigger
+    const denoms = [2, 3, 4, 5, 6, 8, 10, 12];
+    let a_num, a_den, b_num, b_den, a_val, b_val;
+    let attempts = 0;
+    do {
+      a_den = pick(denoms); b_den = pick(denoms);
+      a_num = rand(1, a_den - 1); b_num = rand(1, b_den - 1);
+      a_val = a_num / a_den; b_val = b_num / b_den;
+      attempts++;
+    } while ((a_den === b_den || Math.abs(a_val - b_val) < 0.05) && attempts < 8);
+    const aBigger = a_val > b_val;
+    const ans = aBigger ? 1 : 2;
+    const cross1 = a_num * b_den;
+    const cross2 = b_num * a_den;
+    const tip = `Cross-multiply: ${a_num} × ${b_den} = ${cross1}, ${b_num} × ${a_den} = ${cross2}. ${cross1 > cross2 ? cross1 + ' > ' + cross2 : cross2 + ' > ' + cross1}, so ${aBigger ? a_num + '/' + a_den : b_num + '/' + b_den} is bigger.`;
+    const html = `
+      <div class="choice-prompt">Which is bigger?</div>
+      <div class="choice-row">
+        <div class="choice-card"><span class="opt-tag">1</span>${frac(a_num, a_den)}</div>
+        <div class="choice-card"><span class="opt-tag">2</span>${frac(b_num, b_den)}</div>
+      </div>
+      <div class="choice-hint">Type 1 or 2</div>
+    `;
+    return {
+      text: `Bigger? (1) ${a_num}/${a_den}  (2) ${b_num}/${b_den}  → type 1 or 2`,
+      html,
+      answer: ans,
+      tip,
+      topic: 'fraction-compare',
+      validRange: [1, 2]
+    };
+  }
+
+  // The six "core" fraction-decimal-percentage equivalences students should know cold.
+  function qFracDecPct(grade) {
+    const equivalences = [
+      { num: 1, den: 2, dec: 0.5,   pct: 50 },
+      { num: 1, den: 4, dec: 0.25,  pct: 25 },
+      { num: 3, den: 4, dec: 0.75,  pct: 75 },
+      { num: 1, den: 5, dec: 0.2,   pct: 20 },
+      { num: 1, den: 10, dec: 0.1,  pct: 10 },
+      { num: 1, den: 8, dec: 0.125, pct: 12.5 },
+    ];
+    const e = pick(equivalences);
+    const direction = pick(['fracToDec', 'fracToPct', 'decToPct', 'pctToDec']);
+    const fracStr = `${e.num}/${e.den}`;
+    const fracHtml = frac(e.num, e.den);
+    const memo = `Worth memorising: 1/2=0.5=50%, 1/4=0.25=25%, 3/4=0.75=75%, 1/5=0.2=20%, 1/10=0.1=10%, 1/8=0.125=12.5%.`;
+
+    if (direction === 'fracToDec') {
+      return {
+        text: `${fracStr} = ? (as decimal)`,
+        html: `${fracHtml} = ? <span style="font-size:0.55em;color:var(--text-dim);">(as decimal)</span>`,
+        answer: e.dec,
+        tip: `${fracStr} = ${e.num} ÷ ${e.den} = ${e.dec}. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    } else if (direction === 'fracToPct') {
+      return {
+        text: `${fracStr} = ?%`,
+        html: `${fracHtml} = ?%`,
+        answer: e.pct,
+        tip: `${fracStr} = ${e.pct}%. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    } else if (direction === 'decToPct') {
+      return {
+        text: `${e.dec} = ?%`,
+        answer: e.pct,
+        tip: `Multiply by 100 to convert decimal → %: ${e.dec} × 100 = ${e.pct}%. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    } else { // pctToDec
+      return {
+        text: `${e.pct}% = ? (as decimal)`,
+        answer: e.dec,
+        tip: `Divide by 100 to convert % → decimal: ${e.pct} ÷ 100 = ${e.dec}. ${memo}`,
+        topic: 'frac-dec-pct'
+      };
+    }
+  }
+
+  function qBodmas(grade) {
+    // Avoid division (to keep integer answers cleanly).
+    const a = rand(2, 12), b = rand(2, 12);
+    let expr, ans, tip;
+    const layout = pick([1, 2, 3]);
+    if (layout === 1) {
+      // a + b × c
+      const c = rand(2, 12);
+      expr = `${a} + ${b} × ${c}`;
+      ans = a + b * c;
+      tip = `× before +. ${b} × ${c} = ${b*c}. Then ${a} + ${b*c} = ${ans}.`;
+    } else if (layout === 2) {
+      // a × b − c — cap c so the result is strictly positive (never zero, never negative).
+      const ab = a * b;
+      const c = rand(2, Math.min(12, ab - 1));
+      expr = `${a} × ${b} − ${c}`;
+      ans = ab - c;
+      tip = `× before −. ${a} × ${b} = ${ab}. Then ${ab} − ${c} = ${ans}.`;
+    } else {
+      // (a + b) × c
+      const c = rand(2, 12);
+      expr = `(${a} + ${b}) × ${c}`;
+      ans = (a + b) * c;
+      tip = `Brackets first. ${a} + ${b} = ${a+b}. Then × ${c} = ${ans}.`;
+    }
+    return { text: `${expr} = ?`, answer: ans, tip, topic: 'bodmas' };
+  }
+
+  // Topic pool by level
+  const POOL = {
+    3: ['addition', 'addition', 'subtraction', 'subtraction', 'complement', 'halvesdoubles'],
+    4: ['addition', 'subtraction', 'multiplication', 'multiplication', 'complement', 'halvesdoubles', 'square'],
+    5: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'complement', 'halvesdoubles', 'square', 'mental25', 'percentage', 'pattern', 'fractioncompare', 'bodmas', 'fracdecpct', 'fracdecpct'],
+    6: ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'halvesdoubles', 'square', 'mental25', 'mental99', 'percentage', 'pattern', 'fractioncompare', 'bodmas', 'bodmas', 'fracdecpct', 'fracdecpct']
+  };
+
+  const GENERATORS = {
+    addition: qAddition,
+    subtraction: qSubtraction,
+    multiplication: qMultiplication,
+    division: qDivision,
+    fractions: qFractions,
+    complement: qComplement,
+    halvesdoubles: qHalvesDoubles,
+    square: qSquare,
+    mental25: qMental25,
+    mental99: qMental99,
+    percentage: qPercentage,
+    pattern: qPattern,
+    fractioncompare: qFractionCompare,
+    bodmas: qBodmas,
+    fracdecpct: qFracDecPct,
+  };
+
+  function generateQuestion() {
+    const pool = POOL[gradeLevel] || POOL[5];
+    let q;
+    let tries = 0;
+    // Try up to 20 times to avoid repeating a question already seen in this game.
+    // If we somehow can't find a fresh one (e.g., very long game with a small pool), give up.
+    do {
+      const topic = pick(pool);
+      q = GENERATORS[topic](gradeLevel);
+      tries++;
+    } while (seenQuestions.has(q.text) && tries < 20);
+    seenQuestions.add(q.text);
+    currentQuestion = q;
+    const el = document.getElementById('question');
+    if (currentQuestion.html) {
+      el.innerHTML = currentQuestion.html;
+    } else {
+      el.textContent = currentQuestion.text;
+    }
+    el.classList.remove('fade-in');
+    void el.offsetWidth;
+    el.classList.add('fade-in');
+    questionStartTime = performance.now();
+  }
+
+  // ===== Operations list update =====
+  function updateOperationsList() {
+    const grade = parseInt(document.getElementById('grade-level').value);
+    const labels = {
+      3: '+, −, number bonds, halves & doubles',
+      4: '+, −, ×, squares, halves & doubles',
+      5: '+, −, ×, ÷, fractions, %, fraction↔decimal↔% conversions, patterns, BODMAS, mental tricks',
+      6: 'All of Year 5–6, plus 99×, bigger squares, 2-digit ×, harder BODMAS'
+    };
+    document.getElementById('operations-list').textContent = labels[grade] || labels[5];
+  }
+
+  // ===== Game flow =====
+  function startGame() {
+    cancelWrongAnswerPause();
+    primeAudio(); // unlock audio while we're inside the Start click gesture
+    playerName = document.getElementById('player-name').value.trim() || 'Player';
+    gradeLevel = parseInt(document.getElementById('grade-level').value);
+    gameDuration = parseInt(document.getElementById('game-duration').value);
+    timeLeft = gameDuration;
+
+    score = 0;
+    correctAnswers = 0;
+    incorrectAnswers = 0;
+    totalAnswered = 0;
+    mistakes = [];
+    responseTimes = [];
+    seenQuestions = new Set();
+
+    updateScoreDisplay();
+    updateTimerDisplay();
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('answer').value = '';
+
+    document.getElementById('intro-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+
+    updateSoundUI();
+    generateQuestion();
+    document.getElementById('answer').focus();
+
+    clearInterval(timerInterval);
+    gameStartedAt = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    document.getElementById('timer').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+
+  function updateTimer() {
+    // Wall-clock based: survives background-tab throttling.
+    const elapsed = Math.floor((Date.now() - gameStartedAt) / 1000);
+    timeLeft = Math.max(0, gameDuration - elapsed);
+    updateTimerDisplay();
+    if (timeLeft <= 0) endGame();
+  }
+
+  // ===== Init (single DOMContentLoaded handler) =====
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sound toggle on intro screen
+    const sw = document.getElementById('sound-switch');
+    if (sw) {
+      sw.addEventListener('click', toggleSound);
+      sw.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleSound(); }
+      });
+    }
+    // Operations list updates with level
+    document.getElementById('grade-level').addEventListener('change', updateOperationsList);
+    updateOperationsList();
+    // Load saved sound preference
+    loadSoundPref();
+    // Submit on Enter (use keydown — keypress is deprecated)
+    document.getElementById('answer').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); }
     });
-    mc += '</div>';
-    html += `
-      <div class="q-text">How many factors does this number have?</div>
-      <div class="q-number">${q.n}</div>
-      ${mc}`;
-
-  } else if (q.type === 'pair') {
-    html += `
-      <div class="q-text">Fill in the missing number to complete the <strong>factor pair</strong>:</div>
-      <div style="margin:16px 0">
-        <div class="q-number" style="font-size:clamp(1.5rem,5vw,2.5rem);margin-bottom:12px;">${q.n} = ${q.known} × ?</div>
-        <div class="pair-wrap">
-          <div class="pair-num">${q.known}</div>
-          <div class="pair-eq">×</div>
-          <input class="pair-box" id="pairInput" type="number" min="1" max="200" placeholder="?" onkeydown="if(event.key==='Enter')submitPair()">
-          <div class="pair-eq">=</div>
-          <div class="pair-num">${q.n}</div>
-        </div>
-      </div>
-      <button class="pair-submit" onclick="submitPair()">Check Answer ✓</button>`;
-  }
-
-  card.innerHTML = html;
-  if (q.type === 'pair') {
-    setTimeout(() => { const el = document.getElementById('pairInput'); if(el) el.focus(); }, 50);
-  }
-}
-
-// ═══════════════════════════════════════════════
-//  ANSWER HANDLERS
-// ═══════════════════════════════════════════════
-let selectedFactorSet = new Set();
-
-function toggleFactor(btn, val) {
-  if (answered) return;
-  if (selectedFactorSet.has(val)) {
-    selectedFactorSet.delete(val);
-    btn.classList.remove('selected');
-  } else {
-    selectedFactorSet.add(val);
-    btn.classList.add('selected');
-  }
-}
-
-function submitFactors() {
-  if (answered) return;
-  stopTimer();
-  answered = true;
-  document.getElementById('submitFactors').disabled = true;
-
-  const correct = new Set(currentQ.answer);
-  const selected = selectedFactorSet;
-  let allRight = true;
-  for (const v of correct) if (!selected.has(v)) { allRight = false; break; }
-  for (const v of selected) if (!correct.has(v)) { allRight = false; break; }
-
-  // Colour grid
-  document.querySelectorAll('.ng-btn').forEach(btn => {
-    const v = parseInt(btn.dataset.v);
-    if (correct.has(v) && selected.has(v)) { btn.classList.add('correct'); }
-    else if (selected.has(v) && !correct.has(v)) { btn.classList.add('wrong-sel'); }
-    else if (correct.has(v) && !selected.has(v)) { btn.classList.add('missed'); }
-    btn.classList.add('disabled');
   });
 
-  selectedFactorSet.clear();
-  resolveAnswer(allRight, 3);
-}
+  function checkAnswer() {
+    // Defensive guard: ignore submissions while we're in the wrong-answer pause.
+    if (awaitingNext) return;
 
-function answerYN(val) {
-  if (answered) return;
-  stopTimer();
-  answered = true;
-  document.querySelectorAll('.yn-btn').forEach(b => b.disabled = true);
-  const correct = (val === currentQ.answer);
-  resolveAnswer(correct, 2);
-}
+    const inputEl = document.getElementById('answer');
+    const submitBtn = document.getElementById('submit-btn');
+    const userInput = inputEl.value.trim();
+    const userAnswer = parseFloat(userInput);
+    const feedback = document.getElementById('feedback');
 
-function answerMC(btn, val) {
-  if (answered) return;
-  stopTimer();
-  answered = true;
-  document.querySelectorAll('.mc-btn').forEach(b => b.disabled = true);
-  const correct = (val === currentQ.answer);
-  btn.classList.add(correct ? 'correct' : 'wrong');
-  if (!correct) {
-    document.querySelectorAll('.mc-btn').forEach(b => {
-      if (parseInt(b.textContent) === currentQ.answer) b.classList.add('correct');
-    });
-  }
-  resolveAnswer(correct, 2);
-}
-
-function submitPair() {
-  if (answered) return;
-  const inp = document.getElementById('pairInput');
-  if (!inp || inp.value === '') return;
-  stopTimer();
-  answered = true;
-  document.querySelector('.pair-submit').disabled = true;
-  const val = parseInt(inp.value);
-  const correct = (val === currentQ.answer);
-  inp.classList.add(correct ? 'correct' : 'wrong');
-  if (!correct) {
-    inp.value = currentQ.answer;
-    inp.classList.remove('wrong'); inp.classList.add('correct');
-    setTimeout(() => { inp.value = parseInt(document.getElementById('pairInput').value); }, 0);
-  }
-  resolveAnswer(correct, 2);
-}
-
-// ═══════════════════════════════════════════════
-//  RESOLVE + FEEDBACK
-// ═══════════════════════════════════════════════
-function resolveAnswer(correct, basePoints) {
-  stopTimer();
-  qStats[currentQ.type].total++;
-
-  if (correct) {
-    qStats[currentQ.type].correct++;
-    streak++;
-    if (streak > bestStreak) bestStreak = streak;
-
-    // Points: base + time bonus + streak multiplier
-    const timeBonus = Math.floor((timerLeft / totalTime) * 3);
-    const multiplier = streak >= 5 ? 3 : streak >= 3 ? 2 : 1;
-    const pts = (basePoints + timeBonus) * multiplier;
-    totalTimeBonus += timeBonus;
-    score += pts;
-    updateScore();
-
-    const streakEl = document.getElementById('streakBadge');
-    document.getElementById('streakCount').textContent = streak;
-    if (streak >= 2) streakEl.classList.add('show'); else streakEl.classList.remove('show');
-
-    showExplainer(true, pts, multiplier, timeBonus);
-
-    document.getElementById('nextBtn').textContent = questionNum >= TOTAL_QUESTIONS
-      ? 'See Results 🏁'
-      : 'Next Problem ➡️';
-  } else {
-    streak = 0;
-    document.getElementById('streakBadge').classList.remove('show');
-    lives--;
-    updateLives();
-    showExplainer(false, 0, 1, 0);
-
-    if (lives <= 0) {
-      setTimeout(endGame, 2200);
+    if (userInput === '' || isNaN(userAnswer)) {
+      feedback.textContent = 'Type a number, then press Enter.';
+      feedback.className = 'feedback muted pulse';
       return;
     }
 
-    document.getElementById('nextBtn').textContent = questionNum >= TOTAL_QUESTIONS
-      ? 'See Results 🏁'
-      : 'Next Problem ➡️';
-  }
-
-  document.getElementById('nextBtn').style.display = 'block';
-}
-
-// ═══════════════════════════════════════════════
-//  EXPLAINER
-// ═══════════════════════════════════════════════
-function showExplainer(correct, pts, multiplier, timeBonus) {
-  const expl = document.getElementById('explainer');
-  const icon = document.getElementById('explIcon');
-  const title = document.getElementById('explTitle');
-  const body = document.getElementById('explBody');
-
-  icon.textContent = correct ? '🎉' : '💡';
-  title.className = 'explainer-title ' + (correct ? 'correct-title' : 'wrong-title');
-
-  let scoreMsg = '';
-  if (correct) {
-    let parts = [`+${pts} points`];
-    if (timeBonus > 0) parts.push(`includes ⚡ +${timeBonus} speed bonus`);
-    if (multiplier > 1) parts.push(`🔥 ${multiplier}x streak multiplier!`);
-    title.textContent = `✅ Correct! ${parts.join(' · ')}`;
-  } else {
-    title.textContent = `❌ Not quite — here's the explanation:`;
-  }
-
-  body.innerHTML = buildExplanation(currentQ);
-  expl.classList.add('show');
-}
-
-function buildExplanation(q) {
-  const n = q.n || q.n;
-  const factors = getFactors(n || (q.known * q.answer));
-  const pf = primeFactors(n || (q.known * q.answer));
-  const pairs = getFactorPairs(n || (q.known * q.answer));
-
-  let html = '';
-
-  if (q.type === 'prime') {
-    const actualN = q.n;
-    const prime = isPrime(actualN);
-    if (prime) {
-      html += `<strong>${actualN} is PRIME</strong> — it has exactly <span class="highlight">2 factors: 1 and ${actualN}</span>.<br>
-      Try dividing ${actualN} by 2, 3, 5, 7… none of them go in evenly. That's how you test for primes!`;
-    } else {
-      const smallFactor = factors.find(f => f > 1 && f < actualN);
-      html += `<strong>${actualN} is COMPOSITE</strong> — it has <span class="highlight">${factors.length} factors</span>.<br>
-      It's composite because ${actualN} ÷ ${smallFactor} = ${actualN/smallFactor} (a whole number), so ${smallFactor} divides into it.<br>`;
-      html += `<br><strong>All factors of ${actualN}:</strong><div class="pairs-row">`;
-      factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
-      html += `</div>`;
+    // Validity for choice questions (e.g., fraction compare)
+    if (currentQuestion.validRange) {
+      const [lo, hi] = currentQuestion.validRange;
+      if (userAnswer < lo || userAnswer > hi || !Number.isInteger(userAnswer)) {
+        feedback.textContent = `Type ${lo} or ${hi}.`;
+        feedback.className = 'feedback muted pulse';
+        return;
+      }
     }
-    html += buildPFTree(actualN, pf);
 
-  } else if (q.type === 'factors') {
-    html += `<strong>All ${factors.length} factors of ${q.n}:</strong><div class="pairs-row">`;
-    factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
-    html += `</div><br>`;
-    html += `<strong>💡 How to find them:</strong> Check every number from 1 to √${q.n} (≈ ${Math.ceil(Math.sqrt(q.n))}). If it divides in, both it <em>and</em> its partner are factors.<br><div class="pairs-row">`;
-    pairs.forEach(([a,b]) => html += `<div class="pair-chip">${a} × ${b}</div>`);
-    html += `</div>`;
-    html += buildPFTree(q.n, pf);
+    const elapsed = performance.now() - questionStartTime;
+    responseTimes.push(elapsed);
 
-  } else if (q.type === 'isfactor') {
-    const actuallyIs = (q.n % q.candidate === 0);
-    if (actuallyIs) {
-      html += `<strong>Yes, ${q.candidate} IS a factor of ${q.n}</strong><br>
-      ${q.n} ÷ ${q.candidate} = <span class="highlight">${q.n/q.candidate}</span> — it divides with no remainder.`;
+    totalAnswered++;
+    const correctAns = currentQuestion.answer;
+    let isCorrect;
+    if (Number.isInteger(correctAns)) {
+      isCorrect = userAnswer === correctAns;
     } else {
-      const rem = q.n % q.candidate;
-      html += `<strong>${q.candidate} is NOT a factor of ${q.n}</strong><br>
-      ${q.n} ÷ ${q.candidate} = ${Math.floor(q.n/q.candidate)} remainder <span class="highlight">${rem}</span> — there's a remainder, so it doesn't divide evenly.`;
+      // Tight tolerance for decimal answers — 0.124 should NOT pass for 0.125.
+      isCorrect = Math.abs(userAnswer - correctAns) < 0.001;
     }
-    html += `<br><br><strong>The real factors of ${q.n} are:</strong><div class="pairs-row">`;
-    factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
-    html += `</div>`;
 
-  } else if (q.type === 'count') {
-    html += `<strong>${q.n} has <span class="highlight">${q.answer} factors</span>.</strong><br>
-    Here they all are:<div class="pairs-row">`;
-    factors.forEach(f => html += `<div class="pair-chip">${f}</div>`);
-    html += `</div><br><strong>💡 How to count them:</strong> Check every number from 1 to ${q.n}. If it divides in with no remainder, it's a factor. The factors always come in pairs — like ${getFactorPairs(q.n).map(([a,b])=>a+'×'+b).join(', ')}.`;
-    html += buildPFTree(q.n, pf);
-
-  } else if (q.type === 'pair') {
-    html += `<strong>${q.n} = ${q.known} × <span class="highlight">${q.answer}</span></strong><br>
-    ${q.n} ÷ ${q.known} = <span class="highlight">${q.answer}</span> — dividing is the easiest way to find the missing partner.<br><br>
-    <strong>All factor pairs of ${q.n}:</strong><div class="pairs-row">`;
-    pairs.forEach(([a,b]) => html += `<div class="pair-chip">${a} × ${b}</div>`);
-    html += `</div>`;
-    html += buildPFTree(q.n, pf);
-  }
-
-  return html;
-}
-
-function buildPFTree(n, pf) {
-  if (isPrime(n)) return '';
-  let html = `<br><strong>Prime factorisation of ${n}:</strong>`;
-  html += `<div class="factor-tree">`;
-  html += `<div class="ft-num">${n}</div>`;
-  html += `<div class="ft-op">=</div>`;
-  pf.forEach((f, i) => {
-    html += `<div class="ft-prime">${f}</div>`;
-    if (i < pf.length - 1) html += `<div class="ft-op">×</div>`;
-  });
-  html += `</div>`;
-  // Count powers
-  const counts = {};
-  pf.forEach(f => counts[f] = (counts[f]||0)+1);
-  const powStr = Object.entries(counts).map(([b,e]) => e > 1 ? `${b}^${e}` : b).join(' × ');
-  html += `<div style="color:#8b949e;font-size:0.8rem">Written with powers: <strong style="color:var(--pink)">${powStr}</strong></div>`;
-  return html;
-}
-
-// ═══════════════════════════════════════════════
-//  TIMER
-// ═══════════════════════════════════════════════
-function startTimer(seconds) {
-  stopTimer();
-  timerLeft = seconds;
-  totalTime = seconds;
-  updateTimerUI();
-
-  timerInterval = setInterval(() => {
-    timerLeft -= 0.1;
-    if (timerLeft <= 0) {
-      timerLeft = 0;
-      updateTimerUI();
-      stopTimer();
-      if (!answered) timeUp();
+    if (isCorrect) {
+      score += 3;
+      correctAnswers++;
+      feedback.textContent = `✓ Correct  (+3)`;
+      feedback.className = 'feedback correct pulse';
+      updateScoreDisplay();
+      inputEl.value = '';
+      // Snappy: next question immediately
+      generateQuestion();
+      inputEl.focus();
     } else {
-      updateTimerUI();
-    }
-  }, 100);
-}
-
-function stopTimer() {
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-}
-
-function updateTimerUI() {
-  const pct = Math.max(0, timerLeft / totalTime * 100);
-  const bar = document.getElementById('timerBar');
-  const num = document.getElementById('timerNum');
-  bar.style.width = pct + '%';
-  const danger = timerLeft <= totalTime * 0.3;
-  bar.classList.toggle('danger', danger);
-  num.classList.toggle('danger', danger);
-  num.textContent = Math.ceil(timerLeft);
-}
-
-function timeUp() {
-  if (answered) return;
-  answered = true;
-
-  // Disable all interactive elements
-  document.querySelectorAll('.yn-btn,.mc-btn,.ng-btn,.pair-submit,.submit-factors').forEach(b => b.disabled = true);
-
-  streak = 0;
-  document.getElementById('streakBadge').classList.remove('show');
-  lives--;
-  updateLives();
-
-  qStats[currentQ.type].total++;
-
-  // Show explainer with timeout message
-  const expl = document.getElementById('explainer');
-  document.getElementById('explIcon').textContent = '⏰';
-  const title = document.getElementById('explTitle');
-  title.className = 'explainer-title wrong-title';
-  title.textContent = "⏰ Time's up!";
-  document.getElementById('explBody').innerHTML = buildExplanation(currentQ);
-  expl.classList.add('show');
-  document.getElementById('nextBtn').style.display = 'block';
-
-  if (lives <= 0) {
-    setTimeout(endGame, 2200);
-  } else {
-    document.getElementById('nextBtn').textContent = questionNum >= TOTAL_QUESTIONS
-      ? 'See Results 🏁'
-      : 'Next Problem ➡️';
-  }
-}
-
-// ═══════════════════════════════════════════════
-//  NEXT QUESTION
-// ═══════════════════════════════════════════════
-function nextQuestion() {
-  if (questionNum >= TOTAL_QUESTIONS) { endGame(); return; }
-  selectedFactorSet.clear();
-  generateQuestion();
-}
-
-// ═══════════════════════════════════════════════
-//  UI HELPERS
-// ═══════════════════════════════════════════════
-function updateScore() {
-  document.getElementById('hudScore').textContent = score;
-}
-
-function updateLives() {
-  for (let i = 0; i < 3; i++) {
-    const h = document.getElementById('h' + i);
-    if (i < lives) {
-      h.classList.remove('lost');
-    } else {
-      h.classList.add('lost');
-      h.classList.add('heart-shake');
-      setTimeout(() => h.classList.remove('heart-shake'), 400);
+      score -= 1;
+      incorrectAnswers++;
+      // Record mistake
+      mistakes.push({
+        text: currentQuestion.text,
+        html: currentQuestion.html || null,
+        userAnswer: userInput,
+        correctAnswer: correctAns,
+        tip: currentQuestion.tip,
+        topic: currentQuestion.topic,
+      });
+      let displayCorrect = correctAns;
+      if (typeof displayCorrect === 'number' && !Number.isInteger(displayCorrect)) {
+        displayCorrect = Number(displayCorrect).toFixed(2).replace(/\.?0+$/, '');
+      }
+      feedback.innerHTML = `✗ You wrote <strong>${escapeHtml(userInput)}</strong>. Answer was <strong>${displayCorrect}</strong>  (−1)`;
+      feedback.className = 'feedback incorrect pulse';
+      updateScoreDisplay();
+      inputEl.value = '';
+      // Hold briefly so the wrong answer registers — disable input AND submit, track timeout.
+      awaitingNext = true;
+      inputEl.disabled = true;
+      if (submitBtn) submitBtn.disabled = true;
+      if (wrongAnswerTimeout) clearTimeout(wrongAnswerTimeout);
+      wrongAnswerTimeout = setTimeout(() => {
+        wrongAnswerTimeout = null;
+        awaitingNext = false;
+        inputEl.disabled = false;
+        if (submitBtn) submitBtn.disabled = false;
+        // Only proceed if the game is still running (timer hasn't fired endGame).
+        const gameVisible = document.getElementById('game-screen').style.display !== 'none';
+        if (gameVisible) {
+          generateQuestion();
+          inputEl.focus();
+        }
+      }, 900);
     }
   }
-}
 
-// ═══════════════════════════════════════════════
-//  END GAME
-// ═══════════════════════════════════════════════
-function endGame() {
-  stopTimer();
-  showScreen('gameOverScreen');
-
-  const totalQ = Object.values(qStats).reduce((a,b) => a + b.total, 0);
-  const totalCorrect = Object.values(qStats).reduce((a,b) => a + b.correct, 0);
-  const accuracy = totalQ > 0 ? Math.round(totalCorrect / totalQ * 100) : 0;
-
-  document.getElementById('goTitle').textContent = lives <= 0 ? 'Out of Lives! 💀' : '🏁 15 Questions Done!';
-  document.getElementById('goSubtitle').textContent = `Well done, ${playerName}!`;
-  document.getElementById('goScore').textContent = score;
-  document.getElementById('goCorrect').textContent = totalCorrect;
-  document.getElementById('goTotal').textContent = `of ${totalQ} questions`;
-  document.getElementById('goBestStreak').textContent = bestStreak;
-  document.getElementById('goAccuracy').textContent = accuracy + '%';
-  document.getElementById('goAccSub').textContent = accuracy >= 80 ? '🌟 Outstanding!' : accuracy >= 60 ? '👍 Good work!' : '📚 Keep practising!';
-  document.getElementById('goTimeBonus').textContent = totalTimeBonus;
-
-  // Accuracy breakdown
-  let ab = '<div class="ab-title">📊 Accuracy by question type</div>';
-  QTYPES.forEach(t => {
-    const s = qStats[t];
-    if (s.total === 0) return;
-    const pct = Math.round(s.correct / s.total * 100);
-    ab += `<div class="ab-row">
-      <div class="ab-name">${QTYPE_LABELS[t]}</div>
-      <div class="ab-bar-bg"><div class="ab-bar" style="width:${pct}%"></div></div>
-      <div class="ab-pct">${pct}%</div>
-    </div>`;
-  });
-  document.getElementById('accuracyBreakdown').innerHTML = ab;
-
-  if (score > 0) launchConfetti();
-}
-
-// ═══════════════════════════════════════════════
-//  CONFETTI
-// ═══════════════════════════════════════════════
-function launchConfetti() {
-  const colors = ['#FFD93D','#FF6B35','#FF4D8D','#4ECDC4','#A855F7','#22C55E'];
-  for (let i = 0; i < 70; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'confetti-piece';
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.background = randFrom(colors);
-      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-      el.style.width = el.style.height = (6 + Math.random()*8) + 'px';
-      el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
-      el.style.animationDelay = (Math.random() * 0.3) + 's';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3500);
-    }, i * 25);
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
-}
-</script>
-<footer style="text-align:center;padding:24px 16px 32px;position:relative;z-index:1;">
-  <a href="https://tamimsthinklab.com/" target="_blank" rel="noopener"
-     style="color:#484f58;font-size:0.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:color 0.2s;"
-     onmouseover="this.style.color='#4ECDC4'" onmouseout="this.style.color='#484f58'">
-    ⚡ Powered by Tamim's ThinkLab
-  </a>
-</footer>
 
+  function endGame() {
+    clearInterval(timerInterval);
+    cancelWrongAnswerPause();
+
+    const totalSecs = gameDuration;
+    const totalMin = totalSecs / 60;
+    const qpm = totalMin > 0 ? (totalAnswered / totalMin) : 0;
+    const avgMs = responseTimes.length > 0
+      ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+      : 0;
+    const accuracy = totalAnswered > 0 ? Math.round((correctAnswers / totalAnswered) * 100) : 0;
+
+    const finalScoreEl = document.getElementById('final-score');
+    finalScoreEl.textContent = score;
+    finalScoreEl.classList.toggle('negative', score < 0);
+    document.getElementById('correct-count').textContent = correctAnswers;
+    document.getElementById('incorrect-count').textContent = incorrectAnswers;
+    document.getElementById('total-count').textContent = totalAnswered;
+    document.getElementById('accuracy').textContent = accuracy + '%';
+    document.getElementById('qpm').textContent = qpm.toFixed(1);
+    document.getElementById('avg-time').textContent = fmtTime(avgMs);
+
+    // Verdict (uses accuracy + qpm, not raw score)
+    let verdict;
+    if (totalAnswered === 0) verdict = `${playerName}, give it another go!`;
+    else if (accuracy >= 90 && qpm >= 12) verdict = `${playerName}, that was lightning. ⚡`;
+    else if (accuracy >= 90) verdict = `${playerName}, ${accuracy}% accuracy — outstanding!`;
+    else if (accuracy >= 75) verdict = `Nice work, ${playerName}. Solid run.`;
+    else if (accuracy >= 50) verdict = `Good effort, ${playerName}. Review the mistakes.`;
+    else verdict = `${playerName}, slow down a touch and check the tips.`;
+    document.getElementById('verdict').textContent = verdict;
+
+    const levelLabel = ({3:'Easy', 4:'Medium', 5:'Hard', 6:'Extreme'})[gradeLevel];
+    const durLabel = (gameDuration / 60) + ' min';
+    document.getElementById('final-meta').textContent = `${levelLabel} · ${durLabel}`;
+
+    // Save to leaderboard
+    const entry = {
+      name: playerName,
+      score,
+      accuracy,
+      qpm: Number(qpm.toFixed(1)),
+      total: totalAnswered,
+      date: new Date().toISOString(),
+    };
+    lastNewLeaderboardIdx = recordScore(gradeLevel, gameDuration, entry);
+
+    // Disable review button if no mistakes
+    const reviewBtn = document.getElementById('review-btn');
+    if (mistakes.length === 0) {
+      reviewBtn.textContent = 'No mistakes 🏆';
+      reviewBtn.disabled = true;
+      reviewBtn.style.opacity = '0.5';
+      reviewBtn.style.cursor = 'default';
+    } else {
+      reviewBtn.textContent = `Review mistakes (${mistakes.length})`;
+      reviewBtn.disabled = false;
+      reviewBtn.style.opacity = '1';
+      reviewBtn.style.cursor = 'pointer';
+    }
+
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+
+    playEndSound(score);
+  }
+
+  function showMistakeReview() {
+    if (mistakes.length === 0) return;
+    leaderboardOrigin = 'result';
+    const list = document.getElementById('mistake-list');
+    list.innerHTML = '';
+    mistakes.forEach((m, i) => {
+      const card = document.createElement('div');
+      card.className = 'mistake-card';
+      let displayCorrect = m.correctAnswer;
+      if (typeof displayCorrect === 'number' && !Number.isInteger(displayCorrect)) {
+        displayCorrect = Number(displayCorrect).toFixed(2).replace(/\.?0+$/, '');
+      }
+      // For review cards, render rich HTML if available — but compact the
+      // fraction-compare layout (choice cards would be oversized in a list).
+      let qHtml;
+      if (m.topic === 'fraction-compare') {
+        // Pull numerators/denominators back out of the plain text fallback.
+        const match = m.text.match(/\((\d+)\)\s*(\d+)\/(\d+)\s*\(\d+\)\s*(\d+)\/(\d+)/);
+        if (match) {
+          const [, , an, ad, bn, bd] = match;
+          qHtml = `Bigger? (1) ${frac(an, ad)} &nbsp; (2) ${frac(bn, bd)}`;
+        } else {
+          qHtml = escapeHtml(m.text);
+        }
+      } else if (m.html) {
+        qHtml = m.html;
+      } else {
+        qHtml = escapeHtml(m.text);
+      }
+      card.innerHTML = `
+        <div class="mistake-q">${qHtml}</div>
+        <div class="mistake-line">You wrote: <span class="you">${escapeHtml(m.userAnswer)}</span></div>
+        <div class="mistake-line">Correct: <span class="correct">${escapeHtml(String(displayCorrect))}</span></div>
+        <div class="mistake-tip"><strong>💡 Speed tip:</strong> ${escapeHtml(m.tip)}</div>
+      `;
+      list.appendChild(card);
+    });
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'block';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showLeaderboardFromIntro() {
+    leaderboardOrigin = 'intro';
+    // Use the currently-selected level/duration from intro so we open a relevant board
+    gradeLevel = parseInt(document.getElementById('grade-level').value);
+    gameDuration = parseInt(document.getElementById('game-duration').value);
+    showLeaderboard();
+    document.getElementById('intro-screen').style.display = 'none';
+  }
+
+  function showLeaderboard() {
+    // Populate selectors
+    const lvlSel = document.getElementById('lb-level');
+    const durSel = document.getElementById('lb-duration');
+    if (lvlSel.options.length === 0) {
+      [[3, 'Easy'], [4, 'Medium'], [5, 'Hard'], [6, 'Extreme']].forEach(([v, l]) => {
+        const o = document.createElement('option'); o.value = v; o.textContent = l + ' (Year ' + (v === 3 ? '3–4' : v === 4 ? '4–5' : v === 5 ? '5–6' : '6–7') + ')';
+        lvlSel.appendChild(o);
+      });
+      [[60, '1 minute'], [120, '2 minutes'], [180, '3 minutes'], [300, '5 minutes'], [600, '10 minutes']].forEach(([v, l]) => {
+        const o = document.createElement('option'); o.value = v; o.textContent = l;
+        durSel.appendChild(o);
+      });
+      lvlSel.addEventListener('change', renderLeaderboard);
+      durSel.addEventListener('change', renderLeaderboard);
+    }
+    lvlSel.value = String(gradeLevel);
+    durSel.value = String(gameDuration);
+    renderLeaderboard();
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderLeaderboard() {
+    const lvl = parseInt(document.getElementById('lb-level').value);
+    const dur = parseInt(document.getElementById('lb-duration').value);
+    const list = getLeaderboard(lvl, dur);
+    const ol = document.getElementById('lb-list');
+    ol.innerHTML = '';
+    if (list.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.innerHTML = '<div class="big">📋</div>No scores yet for this level and duration.';
+      ol.appendChild(empty);
+    } else {
+      const isCurrentBoard = (lvl === gradeLevel && dur === gameDuration);
+      list.forEach((e, i) => {
+        const li = document.createElement('li');
+        if (isCurrentBoard && i === lastNewLeaderboardIdx) li.classList.add('is-new');
+        const date = e.date ? new Date(e.date).toLocaleDateString() : '';
+        li.innerHTML = `
+          <span class="lb-rank">${i + 1}</span>
+          <div>
+            <div class="lb-name">${escapeHtml(e.name)}</div>
+            <div class="lb-meta">${e.accuracy}% · ${e.qpm}/min · ${date}</div>
+          </div>
+          <span class="lb-score">${e.score}</span>
+        `;
+        ol.appendChild(li);
+      });
+    }
+    document.getElementById('lb-meta').textContent = `Top ${Math.min(10, list.length)} scores · stored on this device only`;
+  }
+
+  function backToResult() {
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+    if (leaderboardOrigin === 'intro') {
+      document.getElementById('intro-screen').style.display = 'block';
+      leaderboardOrigin = 'result';
+    } else {
+      document.getElementById('result-screen').style.display = 'block';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetGame() {
+    cancelWrongAnswerPause();
+    lastNewLeaderboardIdx = -1;
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('review-screen').style.display = 'none';
+    document.getElementById('leaderboard-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'block';
+    document.getElementById('player-name').focus();
+  }
+  </script>
 </body>
 </html>
